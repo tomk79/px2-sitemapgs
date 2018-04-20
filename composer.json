@@ -1,0 +1,40 @@
+{
+    "name": "tomk79/px2-sitemapgs",
+    "description": "Pickles2 に、サイトマップを Google スプレッドシート で編集できる機能を追加します。",
+    "keywords": ["pickles2"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tomoya Koyanagi",
+            "email": "tomk79@gmail.com"
+        }
+    ],
+    "scripts":{
+        "test": [
+            "php ./vendor/phpunit/phpunit/phpunit"
+        ]
+    } ,
+    "repositories": [
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "google/apiclient": "^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.1.*" ,
+        "pickles2/px-fw-2.x": "dev-develop",
+        "tomk79/filesystem": "^1.0"
+    },
+    "autoload": {
+        "files": [
+            "php/main.php",
+            "php/lock.php"
+        ]
+    },
+    "extra": {
+        "px2package": {
+            "name": "tomk79/px2-sitemapgs",
+            "type": "plugin"
+        }
+    }
+}
