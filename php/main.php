@@ -48,6 +48,23 @@ class main{
 	 */
 	public function convert_all(){
 		// TODO: 未実装
+
+
+
+		putenv('GOOGLE_APPLICATION_CREDENTIALS='.$this->plugin_conf['credentials_path']);
+		$client = new \Google_Client();
+		$client->useApplicationDefaultCredentials();
+		$client->addScope(\Google_Service_Sheets::SPREADSHEETS);
+		$client->setApplicationName('px2-sitemapgs');
+
+		$service = new \Google_Service_Sheets($client);
+
+		// 値を取得
+		$response = $service->spreadsheets_values->get($this->plugin_conf['spreadsheet_id'], 'シート1!A1:A2');
+		foreach ($response->getValues() as $index => $cols) {
+			echo sprintf('<pre><code>%d: &quot;%s&quot;</code></pre>', $index+1, implode('", "', $cols))."\n";
+		}
+
 		return;
 	}
 
