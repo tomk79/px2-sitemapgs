@@ -28,6 +28,10 @@
     "autoload": {
         "files": [
             "php/main.php",
+            "php/apis/csv2gs.php",
+            "php/apis/gs2csv.php",
+            "php/helper/GsHelper.php",
+            "php/helper/parseSitemapCsv.php",
             "php/lock.php"
         ]
     },
