@@ -8,7 +8,7 @@ Pickles2 に、サイトマップを Google スプレッドシート で編集�
 
 このプラグインからGoogleスプレッドシートにアクセスするために必要な事前準備について説明します。
 
-1. [https://console.developers.google.com/](https://console.developers.google.com/) にログインして、プロジェクトを作成します。
+1. [Google Developers Console](https://console.developers.google.com/) にログインして、プロジェクトを作成します。
 2. 作成したプロジェクトの "認証情報" メニューから、 "認証情報を作成" で  を作成します。 
 	- "サービスアカウントキー" を選択します。
 	- 役割で "閲覧者" を選択します。
@@ -64,6 +64,13 @@ return call_user_func( function(){
 	return $conf;
 } );
 ```
+
+
+## 関連リンク
+
+- [Google Developers Console](https://console.developers.google.com/)
+- [Google Sheets API Document](https://developers.google.com/sheets/api/reference/rest/)
+- [google/google-api-php-client](https://github.com/google/google-api-php-client)
 
 
 ## 更新履歴 - Change log

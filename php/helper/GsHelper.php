@@ -28,15 +28,14 @@ class pxplugin_sitemapGs_helper_GsHelper{
 	}
 
 	/**
-	 * 新規ファイルを作成
+	 * Google Spreadsheet Service
 	 */
-	public function create(){
-		// 新規のファイルは作れない
-		return false;
+	public function gs(){
+		return $this->gs;
 	}
 
 	/**
-	 * 既存のファイルを開く
+	 * 既存のファイルから、Spreadsheet ID を読み取る
 	 */
 	public function load( $path ){
 		if(!strlen($path)){ return false; }
@@ -44,27 +43,10 @@ class pxplugin_sitemapGs_helper_GsHelper{
 		if(!is_readable($path)){ return false; }
 
 		$file_bin = file_get_contents($path);
-		$file_bin = trim($file_bin);
-		$this->spreadsheet_id = $file_bin;
+		$file_bin = trim($file_bin); // TODO: この仕様ではないかもしれない。要調査
+		$spreadsheet_id = $file_bin;
 
-
-		// TODO: これはほんとはここじゃない
-		// 値を取得
-		// see: https://developers.google.com/sheets/api/reference/rest/
-		$response = $this->gs->spreadsheets_values->get($this->spreadsheet_id, 'sitemap!A1:A2');
-		foreach ($response->getValues() as $index => $cols) {
-			echo sprintf('<pre><code>%d: &quot;%s&quot;</code></pre>', $index+1, implode('", "', $cols))."\n";
-		}
-
-		return $objPHPExcel;
-	}
-
-	/**
-	 * 保存する
-	 */
-	public function save( $objPHPExcel, $path, $type = 'Excel2007' ){
-		$objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, $type);
-		return $objWriter->save($path);
+		return $spreadsheet_id;
 	}
 
 }

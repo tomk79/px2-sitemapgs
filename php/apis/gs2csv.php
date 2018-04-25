@@ -69,16 +69,20 @@ class gs2csv{
 		// サイトマップCSVの定義を取得
 		$sitemap_definition = $this->get_sitemap_definition();
 
-		$phpExcelHelper = new pxplugin_sitemapGs_helper_GsHelper();
-		if( !$phpExcelHelper ){
+		$helper = new pxplugin_sitemapGs_helper_GsHelper();
+		if( !$helper ){
 			return false;
 		}
 		set_time_limit(0);
-		$objPHPExcel = $phpExcelHelper->load($this->path_spreadsheet);
+		$spreadsheet_id = $helper->load($this->path_spreadsheet);
 
-return;
+		// 全行列の値を取得
+		// see: https://developers.google.com/sheets/api/reference/rest/
+		$response = $helper->gs()->spreadsheets_values->get($spreadsheet_id, 'sitemap'); // 範囲を省略すると全部取得する
+		$all_rows = $response->getValues();
 
-		$table_definition = $this->parse_definition($objPHPExcel, 0);//xlsxの構造定義を読み解く
+		$table_definition = $this->parse_definition($all_rows);//構造定義を読み解く
+
 		$col_title = array();
 		foreach($table_definition['col_define'] as $tmp_col_define){
 			if( isset( $col_title['start'] ) ){
@@ -90,6 +94,11 @@ return;
 			}
 		}
 		unset($tmp_col_define);
+echo "<pre>";
+var_dump($table_definition);
+var_dump($col_title);
+echo "</pre>";
+return;
 
 		$objPHPExcel->setActiveSheetIndex(0);
 		$objSheet = $objPHPExcel->getActiveSheet();
@@ -377,18 +386,16 @@ return;
 	}//regulize_path()
 
 	/**
-	 * xlsxの構造定義設定を解析する
+	 * 構造定義設定を解析する
 	 */
-	private function parse_definition( $objPHPExcel, $sheetIndex = 0 ){
+	private function parse_definition( $all_rows ){
 		$rtn = array();
-		$objPHPExcel->setActiveSheetIndex($sheetIndex);
-		$objSheet = $objPHPExcel->getActiveSheet();
 
-		parse_str( $objSheet->getCell('A1')->getCalculatedValue(), $rtn );
+		parse_str( $all_rows[0][0], $rtn );
 
-		$rtn['tbl_highest_row'] = $objSheet->getHighestRow(); // e.g. 10
-		$rtn['tbl_highest_col_name'] = $objSheet->getHighestColumn(); // e.g 'F'
-		$rtn['tbl_highest_col'] = \PHPExcel_Cell::columnIndexFromString( $rtn['tbl_highest_col_name'] ); // e.g. 5
+		$rtn['tbl_highest_row'] = count($all_rows); // e.g. 10
+		// $rtn['tbl_highest_col_name'] = $objSheet->getHighestColumn(); // e.g 'F'
+		// $rtn['tbl_highest_col'] = \PHPExcel_Cell::columnIndexFromString( $rtn['tbl_highest_col_name'] ); // e.g. 5
 
 		$rtn['row_definition'] = @intval($rtn['row_definition']);
 		$rtn['row_data_start'] = @intval($rtn['row_data_start']);
@@ -400,18 +407,10 @@ return;
 
 		$rtn['col_define'] = array();
 
-		$mergedCells = $objSheet->getMergeCells();
-		$mergeInfo = array();
-		foreach( $mergedCells as $mergeRow ){
-			if( preg_match( '/^([a-zA-Z]+)'.$rtn['row_definition'].'\:([a-zA-Z]+)'.$rtn['row_definition'].'$/', $mergeRow, $matched ) ){
-				$mergeInfo[$matched[1]] = $matched[2];
-			}
-		}
-
-		$col = 'A';
+		$col = 0;
 		$skip_count = 0;
 		while(1){
-			$def_key = $objSheet->getCell($col.$rtn['row_definition'])->getCalculatedValue();
+			$def_key = $all_rows[$rtn['row_definition']-1][$col];
 			if(!strlen($def_key)){
 				$skip_count ++;
 				$col ++;
@@ -428,14 +427,7 @@ return;
 				// 'name'=>$def_name,
 			);
 
-			if( @strlen($mergeInfo[$col]) ){
-				$mergeStartCol = $mergeInfo[$col];
-				while( strcmp($mergeStartCol, $col) ){
-					$col ++;
-				}
-			}else{
-				$col ++;
-			}
+			$col ++;
 		}
 
 		return $rtn;

@@ -59,11 +59,11 @@ class csv2gs{
 
 		$table_definition = $this->get_table_definition();
 
-		$phpExcelHelper = new pxplugin_sitemapGs_helper_GsHelper();
-		if( !$phpExcelHelper ){
+		$helper = new pxplugin_sitemapGs_helper_GsHelper();
+		if( !$helper ){
 			return false;
 		}
-		$objPHPExcel = $phpExcelHelper->create();
+		$objPHPExcel = $helper->create();
 
 		$objPHPExcel->setActiveSheetIndex(0);
 		$objSheet = $objPHPExcel->getActiveSheet();
@@ -211,7 +211,7 @@ class csv2gs{
 
 		$objPHPExcel->setActiveSheetIndex(0);//メインのセルを選択しなおし。
 
-		$phpExcelHelper->save($objPHPExcel, $path_spreadsheet, 'Excel2007');
+		$helper->save($objPHPExcel, $path_spreadsheet, 'Excel2007');
 
 		clearstatcache();
 
