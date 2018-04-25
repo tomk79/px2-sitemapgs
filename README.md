@@ -23,7 +23,6 @@ Pickles2 に、サイトマップを Google スプレッドシート で編集�
 	- この情報はプラグインオプションで使用します。
 	- スプレッドシートのURL `https://docs.google.com/spreadsheets/d/xxxxxxxx/edit#gid=0` のうち、 `xxxxxxxx` の部分がスプレッドシートのIDです。
 
-
 ## インストール - Install
 
 ※準備中
@@ -64,6 +63,11 @@ return call_user_func( function(){
 	return $conf;
 } );
 ```
+
+
+## 制約
+
+- サイトマップとして使用するシートの名称は、固定文字列 `sitemap` としてください。
 
 
 ## 関連リンク

@@ -94,16 +94,8 @@ class gs2csv{
 			}
 		}
 		unset($tmp_col_define);
-echo "<pre>";
-var_dump($table_definition);
-var_dump($col_title);
-echo "</pre>";
-return;
 
-		$objPHPExcel->setActiveSheetIndex(0);
-		$objSheet = $objPHPExcel->getActiveSheet();
-
-		// xlsxにあってサイトマップ定義にないカスタムカラムを定義に反映
+		// Google Spreadsheet にあってサイトマップ定義にないカスタムカラムを定義に反映
 		$xls_custom_column_definition = $table_definition['col_define'];
 		$tmp_last_elm_info = array();
 		foreach( $sitemap_definition as $tmp_row ){
@@ -117,7 +109,6 @@ return;
 			$tmp_last_elm_info['name'] = $tmp_row['key'];
 			$sitemap_definition[$tmp_last_elm_info['key']] = $tmp_last_elm_info;
 		}
-
 
 		$page_info = array();
 		foreach($sitemap_definition as $row){
@@ -139,7 +130,7 @@ return;
 				// エクセルの最終行に達していたら、終了。
 				break;
 			}
-			if( $objSheet->getCell('A'.$xlsx_row)->getCalculatedValue() == 'EndOfData' ){
+			if( $all_rows[$xlsx_row-1][0] == 'EndOfData' ){
 				// A列が 'EndOfData' だったら、終了。
 				break;
 			}
@@ -149,17 +140,17 @@ return;
 			foreach($sitemap_definition as $key=>$row){
 				$tmp_col_name = @$table_definition['col_define'][$row['key']]['col'];
 				if(strlen($tmp_col_name)){
-					$tmp_page_info[$row['key']] = $objSheet->getCell($tmp_col_name.$xlsx_row)->getCalculatedValue();
+					$tmp_page_info[$row['key']] = $all_rows[$xlsx_row-1][$tmp_col_name];
 
-					// ユーザーが設定したセルフォーマットに従って文字列を復元する
-					$cell_format = $objSheet->getStyle($tmp_col_name.$xlsx_row)->getNumberFormat()->getFormatCode();
-					if( $cell_format !== 'General' ){
-						$tmp_cell_value = \PHPExcel_Style_NumberFormat::toFormattedString( $tmp_page_info[$row['key']], $cell_format );
-						if( !is_null($tmp_cell_value) ){
-							$tmp_page_info[$row['key']] = $tmp_cell_value;
-						}
-					}
-					unset($cell_format, $tmp_cell_value);
+					// // ユーザーが設定したセルフォーマットに従って文字列を復元する
+					// $cell_format = $objSheet->getStyle($tmp_col_name.$xlsx_row)->getNumberFormat()->getFormatCode();
+					// if( $cell_format !== 'General' ){
+					// 	$tmp_cell_value = \PHPExcel_Style_NumberFormat::toFormattedString( $tmp_page_info[$row['key']], $cell_format );
+					// 	if( !is_null($tmp_cell_value) ){
+					// 		$tmp_page_info[$row['key']] = $tmp_cell_value;
+					// 	}
+					// }
+					// unset($cell_format, $tmp_cell_value);
 				}else{
 					$tmp_page_info[$row['key']] = '';
 				}
@@ -179,10 +170,10 @@ return;
 			$alias_title_list = array();
 			while( @strcmp( strtoupper($col_title_col) , strtoupper($col_title['end']) ) < 0 ){
 					// ↑ $col_title['end'] には、titleの終端の右の列の名前が入っている。 よって `strcmp()` の結果は最大で `-1` となる。
-				$tmp_page_info['title'] .= trim( $objSheet->getCell($col_title_col.$xlsx_row)->getCalculatedValue() );
+				$tmp_page_info['title'] .= trim( $all_rows[$xlsx_row-1][$col_title_col] );
 				if(strlen($tmp_page_info['title'])){
 					$col_title_col ++;
-					while( @strcmp( strtoupper($col_title_col) , strtoupper($col_title['end']) ) < 0 && strlen( $tmp_alias_title = trim( $objSheet->getCell(($col_title_col).$xlsx_row)->getCalculatedValue() ) ) ){
+					while( @strcmp( strtoupper($col_title_col) , strtoupper($col_title['end']) ) < 0 && strlen( $tmp_alias_title = trim( $all_rows[$xlsx_row-1][$col_title_col] ) ) ){
 						array_push( $alias_title_list, $tmp_alias_title );
 						$col_title_col ++;
 					}
