@@ -43,10 +43,9 @@ class pxplugin_sitemapGs_helper_GsHelper{
 		if(!is_readable($path)){ return false; }
 
 		$file_bin = file_get_contents($path);
-		$file_bin = trim($file_bin); // TODO: この仕様ではないかもしれない。要調査
-		$spreadsheet_id = $file_bin;
+		$json = json_decode(trim($file_bin));
 
-		return $spreadsheet_id;
+		return @$json->doc_id;
 	}
 
 }

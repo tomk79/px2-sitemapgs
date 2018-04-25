@@ -75,7 +75,7 @@ class main{
 			$extension = $this->px->fs()->get_extension($filename);
 			$extension = strtolower($extension);
 
-			if( $extension != 'spreadsheet' && $extension != 'csv' ){
+			if( $extension != 'gsheet' && $extension != 'csv' ){
 				// 知らない拡張子はスキップ
 				continue;
 			}
@@ -97,8 +97,8 @@ class main{
 
 			// ファイルが既存しない場合、ファイル名がセットされていないので、
 			// 明示的にセットする。
-			if( !@strlen($extensions['spreadsheet']) ){
-				$extensions['spreadsheet'] = $extless_basename.'.spreadsheet';
+			if( !@strlen($extensions['gsheet']) ){
+				$extensions['gsheet'] = $extless_basename.'.gsheet';
 			}
 			if( !@strlen($extensions['csv']) ){
 				$extensions['csv'] = $extless_basename.'.csv';
@@ -108,12 +108,12 @@ class main{
 				// spreadsheet がマスターになる場合
 				if( $this->locker->lock() ){
 					$result = $this->gs2csv(
-						$this->realpath_sitemap_dir.$extensions['spreadsheet'],
+						$this->realpath_sitemap_dir.$extensions['gsheet'],
 						$this->realpath_sitemap_dir.$extensions['csv']
 					);
 					touch(
 						$this->realpath_sitemap_dir.$extensions['csv'],
-						filemtime( $this->realpath_sitemap_dir.$extensions['spreadsheet'] )
+						filemtime( $this->realpath_sitemap_dir.$extensions['gsheet'] )
 					);
 					$this->locker->unlock();
 				}
@@ -123,10 +123,10 @@ class main{
 				if( $this->locker->lock() ){
 					$result = $this->csv2gs(
 						$this->realpath_sitemap_dir.$extensions['csv'],
-						$this->realpath_sitemap_dir.$extensions['spreadsheet']
+						$this->realpath_sitemap_dir.$extensions['gsheet']
 					);
 					touch(
-						$this->realpath_sitemap_dir.$extensions['spreadsheet'],
+						$this->realpath_sitemap_dir.$extensions['gsheet'],
 						filemtime( $this->realpath_sitemap_dir.$extensions['csv'] )
 					);
 					$this->locker->unlock();
@@ -157,12 +157,12 @@ class main{
 	 * このメソッドは、変換後のファイルを生成するのみです。
 	 * タイムスタンプの調整等は行いません。
 	 *
-	 * @param string $spreadsheet_id GoogleスプレッドシートのID
+	 * @param string $path_spreadsheet Googleスプレッドシートのパス
 	 * @param string $path_csv CSVファイルのパス
 	 * @return boolean 実行結果
 	 */
-	public function gs2csv($spreadsheet_id, $path_csv){
-		$result = @(new gs2csv($this->px, $this))->convert( $spreadsheet_id, $path_csv );
+	public function gs2csv($path_spreadsheet, $path_csv){
+		$result = @(new gs2csv($this->px, $this))->convert( $path_spreadsheet, $path_csv );
 		return $result;
 	}
 
@@ -173,11 +173,11 @@ class main{
 	 * タイムスタンプの調整等は行いません。
 	 *
 	 * @param string $path_csv CSVファイルのパス
-	 * @param string $spreadsheet_id GoogleスプレッドシートのID
+	 * @param string $path_spreadsheet Googleスプレッドシートのパス
 	 * @return boolean 実行結果
 	 */
-	public function csv2gs($path_csv, $spreadsheet_id){
-		$result = @(new csv2gs($this->px, $this))->convert( $path_csv, $spreadsheet_id );
+	public function csv2gs($path_csv, $path_spreadsheet){
+		$result = @(new csv2gs($this->px, $this))->convert( $path_csv, $path_spreadsheet );
 		return $result;
 	}
 
