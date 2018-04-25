@@ -44,6 +44,9 @@ class main{
 			$this->plugin_conf['google_application_credentials'] = false;
 			$this->px->error('[px2-sitemapgs] `google_application_credentials` option is required.');
 		}
+		if( !@strlen($this->plugin_conf['csv_expire']) ){
+			$this->plugin_conf['csv_expire'] = 300;
+		}
 		// var_dump($this->plugin_conf);
 
 		if($this->plugin_conf['google_application_credentials']){
@@ -104,7 +107,13 @@ class main{
 				$extensions['csv'] = $extless_basename.'.csv';
 			}
 
-			if( $master_format == 'spreadsheet' ){
+			if(
+				$master_format == 'spreadsheet'
+				&& (
+					!is_file($this->realpath_sitemap_dir.$extensions['csv'])
+					|| time() - $this->plugin_conf['csv_expire'] > filemtime( $this->realpath_sitemap_dir.$extensions['csv'] )
+				)
+			){
 				// spreadsheet がマスターになる場合
 				if( $this->locker->lock() ){
 					$result = $this->gs2csv(
@@ -112,13 +121,19 @@ class main{
 						$this->realpath_sitemap_dir.$extensions['csv']
 					);
 					touch(
-						$this->realpath_sitemap_dir.$extensions['csv'],
-						filemtime( $this->realpath_sitemap_dir.$extensions['gsheet'] )
+						$this->realpath_sitemap_dir.$extensions['csv']
+					);
+					touch(
+						$this->realpath_sitemap_dir.$extensions['gsheet'],
+						filemtime( $this->realpath_sitemap_dir.$extensions['csv'] )
 					);
 					$this->locker->unlock();
 				}
 
-			}elseif( $master_format == 'csv' ){
+			}elseif(
+				$master_format == 'csv'
+				&& true === $this->px->fs()->is_newer_a_than_b( $this->realpath_sitemap_dir.$extensions['csv'], $this->realpath_sitemap_dir.$extensions['gsheet'] )
+			){
 				// CSV がマスターになる場合
 				if( $this->locker->lock() ){
 					$result = $this->csv2gs(

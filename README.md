@@ -13,13 +13,13 @@ Pickles2 に、サイトマップを Google スプレッドシート で編集�
 	- "サービスアカウントキー" を選択します。
 	- 役割で "閲覧者" を選択します。
 	- キーのタイプ で "JSON" を選択します。
-	- JSONファイルのダウンロードが始まるので、保存します。
+	- JSONファイルのダウンロードが始まるので、保存します。 (以降、 `service-account.json` と呼びます)
 3. "Google Sheets API" を有効にします。
 4. Googleスプレッドシートを作成します。
 5. Googleスプレッドシートの共有設定を開き、 共有します。
-	- JSONに含まれる `client_email` にあるメールアドレスに共有します。
+	- `service-account.json` に含まれる `client_email` にあるメールアドレスに共有します。
 	- 編集権限を付与します。
-6. JSONファイルと、スプレッドシートのIDを控えます。
+6. `service-account.json` と、スプレッドシートのIDを控えます。
 	- この情報はプラグインオプションで使用します。
 	- スプレッドシートのURL `https://docs.google.com/spreadsheets/d/xxxxxxxx/edit#gid=0` のうち、 `xxxxxxxx` の部分がスプレッドシートのIDです。
 
@@ -38,7 +38,13 @@ return call_user_func( function(){
 	$conf->funcs->before_sitemap = [
 		// sitemapGS
 		'tomk79\pickles2\sitemap_gs\main::exec('.json_encode(array(
+			// `service-account.json` のパス
 			'google_application_credentials' => '/path/to/service-account.json',
+
+			// CSVファイルの有効期限 (秒)
+			// 60 と設定した場合、 CSVファイルのタイムスタンプから 60秒以上経過していたら、
+			// Googleスプレッドシートから再読み込みします。
+			'csv_expire' => 60*5, // 5分ごとに再読み込み
 
 			// `master_format`
 			// マスターにするファイルフォーマットを指定します。
