@@ -39,8 +39,25 @@ return call_user_func( function(){
 	$conf->funcs->before_sitemap = [
 		// sitemapGS
 		'tomk79\pickles2\sitemap_gs\main::exec('.json_encode(array(
-			'spreadsheet_id' => 'xxxxxxxx',
-			'credentials_path' => '/path/to/credential.json',
+			'google_application_credentials' => '/path/to/service-account.json',
+
+			// `master_format`
+			// マスターにするファイルフォーマットを指定します。
+			//   - `spreadsheet` = Googleスプレッドシートをマスターにする(デフォルト)
+			//   - `csv` = CSVをマスターにする
+			//   - `pass` = 変換しない
+			// のいずれかを指定します。
+			'master_format'=>'spreadsheet',
+
+			// `files_master_format`
+			// ファイル名ごとにマスターにするファイルフォーマットを指定します。
+			// ここに設定されていないファイルは、 `master_format` の設定に従います。
+			'files_master_format'=>array(
+				'timestamp_sitemap'=>'timestamp',
+				'csv_master_sitemap'=>'csv',
+				'gs_master_sitemap'=>'spreadsheet',
+				'no_convert'=>'pass',
+			)
 		)).')',
 	];
 

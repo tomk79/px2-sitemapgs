@@ -76,11 +76,6 @@ return call_user_func( function(){
 
 	$conf->funcs = new stdClass;
 
-	$sitemapgs_options = json_decode(file_get_contents( '../data/sample001/options.json' ));
-	$sitemapgs_options->credentials_path = '../data/sample001/credential.json';
-
-
-
 	// funcs: Before sitemap
 	$conf->funcs->before_sitemap = [
 		 // PX=config
@@ -93,7 +88,9 @@ return call_user_func( function(){
 		'picklesFramework2\commands\clearcache::register' ,
 
 		// sitemapGS
-		'tomk79\pickles2\sitemap_gs\main::exec('.json_encode($sitemapgs_options).')',
+		'tomk79\pickles2\sitemap_gs\main::exec('.json_encode(array(
+			'google_application_credentials' => '../data/sample001/credential.json',
+		)).')',
 	];
 
 	// funcs: Before content

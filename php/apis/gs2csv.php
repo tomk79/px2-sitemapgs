@@ -14,7 +14,7 @@ class gs2csv{
 	/** sitemapGsオブジェクト */
 	private $plugin;
 	/** 出力先パス */
-	private $spreadsheet_id, $path_csv, $path_tmp_csv;
+	private $path_spreadsheet, $path_csv, $path_tmp_csv;
 	/** ページID自動発行のための通し番号 */
 	private $auto_id_num = 0;
 	/** ページID自動発行のためのファイル名 */
@@ -33,10 +33,10 @@ class gs2csv{
 	}
 
 	/**
-	 * エクセルのパスを取得
+	 * Google Spreadsheet のパスを取得
 	 */
-	private function get_spreadsheet_id(){
-		return $this->spreadsheet_id;
+	private function get_path_spreadsheet(){
+		return $this->path_spreadsheet;
 	}
 	/**
 	 * 出力先CSVのパスを取得
@@ -46,10 +46,10 @@ class gs2csv{
 	}
 
 	/**
-	 * xlsxからサイトマップCSVを出力する。
+	 * Google Spreadsheet からサイトマップCSVを出力する。
 	 */
-	public function convert( $spreadsheet_id, $path_csv ){
-		$this->spreadsheet_id = $spreadsheet_id;
+	public function convert( $path_spreadsheet, $path_csv ){
+		$this->path_spreadsheet = $path_spreadsheet;
 		$this->path_csv = $path_csv;
 		$this->path_tmp_csv = $path_csv.'.tmp'.time();
 		do{
@@ -58,8 +58,7 @@ class gs2csv{
 
 		// ページID自動発行のための情報をリセット
 		$this->auto_id_num = 0; // 通し番号をリセット
-		$this->extless_basename = $this->px->fs()->trim_extension(basename($this->spreadsheet_id));//ファイル名を記憶; 入力側のファイル名に準じる。
-
+		$this->extless_basename = $this->px->fs()->trim_extension(basename($this->path_spreadsheet));//ファイル名を記憶; 入力側のファイル名に準じる。
 
 		$path_toppage = '/';
 		if( strlen($this->px->conf()->path_top) ){
@@ -75,7 +74,9 @@ class gs2csv{
 			return false;
 		}
 		set_time_limit(0);
-		$objPHPExcel = $phpExcelHelper->load($this->spreadsheet_id);
+		$objPHPExcel = $phpExcelHelper->load($this->path_spreadsheet);
+
+return;
 
 		$table_definition = $this->parse_definition($objPHPExcel, 0);//xlsxの構造定義を読み解く
 		$col_title = array();

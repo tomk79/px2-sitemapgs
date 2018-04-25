@@ -38,6 +38,19 @@ class main{
 		// object から 連想配列に変換
 		$this->plugin_conf = json_decode( json_encode($this->plugin_conf), true );
 		if( !is_array($this->plugin_conf) ){ $this->plugin_conf = array(); }
+		if( !@strlen($this->plugin_conf['master_format']) ){ $this->plugin_conf['master_format'] = 'spreadsheet'; }
+		if( !@is_array($this->plugin_conf['files_master_format']) ){ $this->plugin_conf['files_master_format'] = array(); }
+		if( !@strlen($this->plugin_conf['google_application_credentials']) ){
+			$this->plugin_conf['google_application_credentials'] = false;
+			$this->px->error('[px2-sitemapgs] `google_application_credentials` option is required.');
+		}
+		// var_dump($this->plugin_conf);
+
+		if($this->plugin_conf['google_application_credentials']){
+			// 環境変数 `GOOGLE_APPLICATION_CREDENTIALS` を設定
+			// Google Client ライブラリが読み取ります。
+			putenv('GOOGLE_APPLICATION_CREDENTIALS='.$this->plugin_conf['google_application_credentials']);
+		}
 
 		$this->realpath_sitemap_dir = $this->px->get_path_homedir().'sitemaps/';
 		$this->locker = new lock($this->px, $this);
@@ -47,24 +60,6 @@ class main{
 	 * すべてのファイルを変換する
 	 */
 	public function convert_all(){
-		// TODO: 未実装
-		putenv('GOOGLE_APPLICATION_CREDENTIALS='.$this->plugin_conf['credentials_path']);
-		$client = new \Google_Client();
-		$client->useApplicationDefaultCredentials();
-		$client->addScope(\Google_Service_Sheets::SPREADSHEETS);
-		$client->setApplicationName('px2-sitemapgs');
-
-		$service = new \Google_Service_Sheets($client);
-
-		// 値を取得
-		$response = $service->spreadsheets_values->get($this->plugin_conf['spreadsheet_id'], 'sitemap!A1:A2');
-		foreach ($response->getValues() as $index => $cols) {
-			echo sprintf('<pre><code>%d: &quot;%s&quot;</code></pre>', $index+1, implode('", "', $cols))."\n";
-		}
-
-
-
-
 		$sitemap_files = array();
 		$tmp_sitemap_files = $this->px->fs()->ls( $this->realpath_sitemap_dir );
 		foreach( $tmp_sitemap_files as $filename ){
@@ -109,10 +104,7 @@ class main{
 				$extensions['csv'] = $extless_basename.'.csv';
 			}
 
-			if(
-				($master_format == 'timestamp' || $master_format == 'spreadsheet')
-				&& true === $this->px->fs()->is_newer_a_than_b( $this->realpath_sitemap_dir.$extensions['spreadsheet'], $this->realpath_sitemap_dir.$extensions['csv'] )
-			){
+			if( $master_format == 'spreadsheet' ){
 				// spreadsheet がマスターになる場合
 				if( $this->locker->lock() ){
 					$result = $this->gs2csv(
@@ -126,10 +118,7 @@ class main{
 					$this->locker->unlock();
 				}
 
-			}elseif(
-				($master_format == 'timestamp' || $master_format == 'csv')
-				&& true === $this->px->fs()->is_newer_a_than_b( $this->realpath_sitemap_dir.$extensions['csv'], $this->realpath_sitemap_dir.$extensions['spreadsheet'] )
-			){
+			}elseif( $master_format == 'csv' ){
 				// CSV がマスターになる場合
 				if( $this->locker->lock() ){
 					$result = $this->csv2gs(
@@ -146,6 +135,20 @@ class main{
 
 		}
 		return;
+	}
+
+	/**
+	 * ファイルの master format を調べる
+	 * @param  string $extless_basename 調べる対象の拡張子を含まないファイル名
+	 * @return string                   master format 名
+	 */
+	private function get_master_format_of( $extless_basename ){
+		$rtn = $this->plugin_conf['master_format'];
+		if( strlen(@$this->plugin_conf['files_master_format'][$extless_basename]) ){
+			$rtn = $this->plugin_conf['files_master_format'][$extless_basename];
+		}
+		$rtn = strtolower($rtn);
+		return $rtn;
 	}
 
 	/**

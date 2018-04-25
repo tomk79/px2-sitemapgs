@@ -14,7 +14,7 @@ class csv2gs{
 	/** sitemapGsオブジェクト */
 	private $plugin;
 
-	private $spreadsheet_id, $path_csv;
+	private $path_spreadsheet, $path_csv;
 	private $site;
 	private $default_cell_style_boarder = array();// 罫線の一括指定
 	private $current_row = 1;
@@ -38,17 +38,17 @@ class csv2gs{
 		return $this->path_csv;
 	}
 	/**
-	 * 出力先エクセルのパスを取得
+	 * 出力先 Google Spreadsheet のパスを取得
 	 */
-	private function get_spreadsheet_id(){
-		return $this->spreadsheet_id;
+	private function get_path_spreadsheet(){
+		return $this->path_spreadsheet;
 	}
 
 	/**
-	 * 現在のサイトマップをxlsxに出力する。
+	 * 現在のサイトマップを Google Spreadsheet に出力する。
 	 */
-	public function convert( $path_csv, $spreadsheet_id ){
-		$this->spreadsheet_id = $spreadsheet_id;
+	public function convert( $path_csv, $path_spreadsheet ){
+		$this->path_spreadsheet = $path_spreadsheet;
 		$this->path_csv = $path_csv;
 
 		// ↓疑似サイトマップオブジェクト
@@ -211,7 +211,7 @@ class csv2gs{
 
 		$objPHPExcel->setActiveSheetIndex(0);//メインのセルを選択しなおし。
 
-		$phpExcelHelper->save($objPHPExcel, $spreadsheet_id, 'Excel2007');
+		$phpExcelHelper->save($objPHPExcel, $path_spreadsheet, 'Excel2007');
 
 		clearstatcache();
 
