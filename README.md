@@ -70,6 +70,9 @@ return call_user_func( function(){
 } );
 ```
 
+## PX Commands
+
+- `?PX=sitemapgs` : サイトマップ形式変換を手動実行する。
 
 ## 制約
 

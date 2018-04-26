@@ -23,7 +23,18 @@ class main{
 	 * @param object $plugin_conf プラグイン設定
 	 */
 	static public function exec($px, $plugin_conf){
-		(new self($px, $plugin_conf))->convert_all();
+		$plugin = new self($px, $plugin_conf);
+		$px->pxcmd()->register('sitemapgs', function($px)use($plugin){
+			print $px->pxcmd()->get_cli_header();
+			print 'progress...'."\n";
+			$plugin->convert_all();
+			print 'DONE!.'."\n";
+			print "\n";
+			print $px->pxcmd()->get_cli_footer();
+			exit;
+		});
+
+		$plugin->convert_all();
 	}
 
 	/**
