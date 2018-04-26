@@ -45,24 +45,6 @@ return call_user_func( function(){
 			// 60 と設定した場合、 CSVファイルのタイムスタンプから 60秒以上経過していたら、
 			// Googleスプレッドシートから再読み込みします。
 			'csv_expire' => 60*5, // 5分ごとに再読み込み
-
-			// `master_format`
-			// マスターにするファイルフォーマットを指定します。
-			//   - `spreadsheet` = Googleスプレッドシートをマスターにする(デフォルト)
-			//   - `csv` = CSVをマスターにする
-			//   - `pass` = 変換しない
-			// のいずれかを指定します。
-			'master_format'=>'spreadsheet',
-
-			// `files_master_format`
-			// ファイル名ごとにマスターにするファイルフォーマットを指定します。
-			// ここに設定されていないファイルは、 `master_format` の設定に従います。
-			'files_master_format'=>array(
-				'timestamp_sitemap'=>'timestamp',
-				'csv_master_sitemap'=>'csv',
-				'gs_master_sitemap'=>'spreadsheet',
-				'no_convert'=>'pass',
-			)
 		)).')',
 	];
 

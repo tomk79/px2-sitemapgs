@@ -27,14 +27,14 @@ class main{
 		$px->pxcmd()->register('sitemapgs', function($px)use($plugin){
 			print $px->pxcmd()->get_cli_header();
 			print 'progress...'."\n";
-			$plugin->convert_all();
+			$plugin->convert_all('gs2csv', true);
 			print 'DONE!.'."\n";
 			print "\n";
 			print $px->pxcmd()->get_cli_footer();
 			exit;
 		});
 
-		$plugin->convert_all();
+		$plugin->convert_all('gs2csv', false);
 	}
 
 	/**
@@ -49,8 +49,6 @@ class main{
 		// object から 連想配列に変換
 		$this->plugin_conf = json_decode( json_encode($this->plugin_conf), true );
 		if( !is_array($this->plugin_conf) ){ $this->plugin_conf = array(); }
-		if( !@strlen($this->plugin_conf['master_format']) ){ $this->plugin_conf['master_format'] = 'spreadsheet'; }
-		if( !@is_array($this->plugin_conf['files_master_format']) ){ $this->plugin_conf['files_master_format'] = array(); }
 		if( !@strlen($this->plugin_conf['google_application_credentials']) ){
 			$this->plugin_conf['google_application_credentials'] = false;
 			$this->px->error('[px2-sitemapgs] `google_application_credentials` option is required.');
@@ -72,8 +70,12 @@ class main{
 
 	/**
 	 * すべてのファイルを変換する
+	 *
+	 * @param string $direction 変換の方向。 `gs2csv` または `csv2gs` を指定できます。 省略時 `gs2csv` 。
+	 * @param boolean $force `true` を指定して強制的に変換する。
 	 */
-	public function convert_all(){
+	public function convert_all( $direction = 'gs2csv', $force = false ){
+		if(!$direction){ $direction = 'gs2csv'; }
 		$sitemap_files = array();
 		$tmp_sitemap_files = $this->px->fs()->ls( $this->realpath_sitemap_dir );
 		foreach( $tmp_sitemap_files as $filename ){
@@ -102,13 +104,6 @@ class main{
 		// var_dump($sitemap_files);
 
 		foreach( $sitemap_files as $extless_basename=>$extensions ){
-			$master_format = $this->get_master_format_of($extless_basename);
-			// var_dump($master_format);
-			if( $master_format == 'pass' ){
-				// `pass` の場合は、変換を行わずスキップ。
-				continue;
-			}
-
 			// ファイルが既存しない場合、ファイル名がセットされていないので、
 			// 明示的にセットする。
 			if( !@strlen($extensions['gsheet']) ){
@@ -119,10 +114,11 @@ class main{
 			}
 
 			if(
-				$master_format == 'spreadsheet'
+				$direction == 'gs2csv'
 				&& (
 					!is_file($this->realpath_sitemap_dir.$extensions['csv'])
 					|| time() - $this->plugin_conf['csv_expire'] > filemtime( $this->realpath_sitemap_dir.$extensions['csv'] )
+					|| $force
 				)
 			){
 				// spreadsheet がマスターになる場合
@@ -142,8 +138,11 @@ class main{
 				}
 
 			}elseif(
-				$master_format == 'csv'
-				&& true === $this->px->fs()->is_newer_a_than_b( $this->realpath_sitemap_dir.$extensions['csv'], $this->realpath_sitemap_dir.$extensions['gsheet'] )
+				$direction == 'csv2gs'
+				&& (
+					true === $this->px->fs()->is_newer_a_than_b( $this->realpath_sitemap_dir.$extensions['csv'], $this->realpath_sitemap_dir.$extensions['gsheet'] )
+					|| $force
+				)
 			){
 				// CSV がマスターになる場合
 				if( $this->locker->lock() ){
@@ -161,20 +160,6 @@ class main{
 
 		}
 		return;
-	}
-
-	/**
-	 * ファイルの master format を調べる
-	 * @param  string $extless_basename 調べる対象の拡張子を含まないファイル名
-	 * @return string                   master format 名
-	 */
-	private function get_master_format_of( $extless_basename ){
-		$rtn = $this->plugin_conf['master_format'];
-		if( strlen(@$this->plugin_conf['files_master_format'][$extless_basename]) ){
-			$rtn = $this->plugin_conf['files_master_format'][$extless_basename];
-		}
-		$rtn = strtolower($rtn);
-		return $rtn;
 	}
 
 	/**
