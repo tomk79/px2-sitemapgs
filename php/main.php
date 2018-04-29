@@ -53,7 +53,9 @@ class main{
 			$this->plugin_conf['google_application_credentials'] = false;
 			$this->px->error('[px2-sitemapgs] `google_application_credentials` option is required.');
 		}
-		if( !@strlen($this->plugin_conf['csv_expire']) ){
+		if( @$this->plugin_conf['csv_expire'] === false || @strtolower($this->plugin_conf['csv_expire']) === 'false' ){
+			$this->plugin_conf['csv_expire'] = false;
+		}elseif( !@strlen($this->plugin_conf['csv_expire']) ){
 			$this->plugin_conf['csv_expire'] = 300;
 		}
 		// var_dump($this->plugin_conf);
@@ -76,6 +78,9 @@ class main{
 	 */
 	public function convert_all( $direction = 'gs2csv', $force = false ){
 		if(!$direction){ $direction = 'gs2csv'; }
+		if( $this->plugin_conf['csv_expire'] === false && !$force){
+			return;
+		}
 		$sitemap_files = array();
 		$tmp_sitemap_files = $this->px->fs()->ls( $this->realpath_sitemap_dir );
 		foreach( $tmp_sitemap_files as $filename ){
