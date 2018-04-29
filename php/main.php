@@ -16,6 +16,8 @@ class main{
 	private $realpath_sitemap_dir;
 	/** アプリケーションロック */
 	private $locker;
+	/** 進捗を表示するフラグ */
+	private $show_progress_flg = false;
 
 	/**
 	 * entry
@@ -25,10 +27,26 @@ class main{
 	static public function exec($px, $plugin_conf){
 		$plugin = new self($px, $plugin_conf);
 		$px->pxcmd()->register('sitemapgs', function($px)use($plugin){
+			$command = $px->get_px_command();
+			$direction = null;
+			switch(@strtolower($command[1])){
+				case 'gs2csv':
+					$direction = 'gs2csv';
+					break;
+				case 'csv2gs':
+					$direction = 'csv2gs';
+					break;
+			}
 			print $px->pxcmd()->get_cli_header();
-			print 'progress...'."\n";
-			$plugin->convert_all('gs2csv', true);
-			print 'DONE!.'."\n";
+			if($direction){
+				print 'progress...'."\n";
+				$plugin->show_progress_flg = true;
+				$plugin->convert_all($direction, true);
+				sleep(1); print "\n";
+				print 'All process DONE!.'."\n";
+			}else{
+				print 'gs2csv, または csv2gs のいずれかのコマンドを指定してください。'."\n";
+			}
 			print "\n";
 			print $px->pxcmd()->get_cli_footer();
 			exit;
@@ -83,6 +101,7 @@ class main{
 		}
 		$sitemap_files = array();
 		$tmp_sitemap_files = $this->px->fs()->ls( $this->realpath_sitemap_dir );
+		$this->msg('Listing sitemap files...');
 		foreach( $tmp_sitemap_files as $filename ){
 			if( preg_match( '/^\\~\\$/', $filename ) ){
 				// エクセルの編集中のキャッシュファイルのファイル名だからスルー
@@ -107,8 +126,12 @@ class main{
 			$sitemap_files[$extless_basename][$extension] = $filename;
 		}
 		// var_dump($sitemap_files);
+		$this->msg($sitemap_files);
 
 		foreach( $sitemap_files as $extless_basename=>$extensions ){
+			$this->msg('');
+			$this->msg('------ Progress "'.$extless_basename.'" :');
+
 			// ファイルが既存しない場合、ファイル名がセットされていないので、
 			// 明示的にセットする。
 			if( !@strlen($extensions['gsheet']) ){
@@ -127,7 +150,9 @@ class main{
 				)
 			){
 				// spreadsheet がマスターになる場合
-				if( $this->locker->lock() ){
+				if( !$this->locker->lock() ){
+					$this->msg('Skipped. (process locked)');
+				}else{
 					$result = $this->gs2csv(
 						$this->realpath_sitemap_dir.$extensions['gsheet'],
 						$this->realpath_sitemap_dir.$extensions['csv']
@@ -135,11 +160,8 @@ class main{
 					touch(
 						$this->realpath_sitemap_dir.$extensions['csv']
 					);
-					touch(
-						$this->realpath_sitemap_dir.$extensions['gsheet'],
-						filemtime( $this->realpath_sitemap_dir.$extensions['csv'] )
-					);
 					$this->locker->unlock();
+					$this->msg('DONE.');
 				}
 
 			}elseif(
@@ -150,16 +172,15 @@ class main{
 				)
 			){
 				// CSV がマスターになる場合
-				if( $this->locker->lock() ){
+				if( !$this->locker->lock() ){
+					$this->msg('Skipped. (process locked)');
+				}else{
 					$result = $this->csv2gs(
 						$this->realpath_sitemap_dir.$extensions['csv'],
 						$this->realpath_sitemap_dir.$extensions['gsheet']
 					);
-					touch(
-						$this->realpath_sitemap_dir.$extensions['gsheet'],
-						filemtime( $this->realpath_sitemap_dir.$extensions['csv'] )
-					);
 					$this->locker->unlock();
+					$this->msg('DONE.');
 				}
 			}
 
@@ -195,6 +216,20 @@ class main{
 	public function csv2gs($path_csv, $path_spreadsheet){
 		$result = @(new csv2gs($this->px, $this))->convert( $path_csv, $path_spreadsheet );
 		return $result;
+	}
+
+	/**
+	 * 進捗メッセージを表示する
+	 */
+	private function msg( $message = '' ){
+		if($this->show_progress_flg){
+			if( is_float($message) || is_int($message) || is_string($message) ){
+				echo $message."\n";
+			}else{
+				var_dump($message);
+			}
+		}
+		return;
 	}
 
 	/**

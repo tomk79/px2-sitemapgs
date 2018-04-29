@@ -44,6 +44,7 @@ return call_user_func( function(){
 			// CSVファイルの有効期限 (秒)
 			// 60 と設定した場合、 CSVファイルのタイムスタンプから 60秒以上経過していたら、
 			// Googleスプレッドシートから再読み込みします。
+			// false を設定した場合、自然更新されなくなります。
 			'csv_expire' => 60*5, // 5分ごとに再読み込み
 		)).')',
 	];
@@ -54,7 +55,8 @@ return call_user_func( function(){
 
 ## PX Commands
 
-- `?PX=sitemapgs` : サイトマップ形式変換を手動実行する。
+- `?PX=sitemapgs.gs2csv` : GoogleスプレッドシートからCSVへの変換を手動で実行する。
+- `?PX=sitemapgs.csv2gs` : CSVからGoogleスプレッドシートへの変換を手動で実行する。
 
 ## 制約
 
