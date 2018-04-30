@@ -63,7 +63,54 @@ class csv2gs{
 		if( !$helper ){
 			return false;
 		}
-		$objPHPExcel = $helper->create();
+		$spreadsheet_id = $helper->load($path_spreadsheet);
+		$this->plugin->msg( 'Spreadsheet ID: '.$spreadsheet_id );
+		// var_dump($spreadsheet_id);
+
+
+		$this->plugin->msg( 'Creating new sheet...' );
+		$requestBody = new \Google_Service_Sheets_BatchUpdateSpreadsheetRequest(array(
+			'requests' => array(
+				'addSheet'=>array(
+					'properties'=>array(
+						'title' => 'sitemap-'.date('Ymd-His'),
+						'index' => 0,
+						'sheetType' => 'GRID',
+						'hidden' => false,
+					)
+				)
+			)
+		));
+		$response = $helper->gs()->spreadsheets->batchUpdate($spreadsheet_id, $requestBody);
+		$newSheetProperties = $response->replies[0]['addSheet']['properties'];
+		// var_dump($newSheetProperties['sheetId']);
+		$this->plugin->msg( 'new sheet id: '.$newSheetProperties['sheetId'] );
+
+
+
+		$this->plugin->msg( 'removing rows...' );
+		$requestBody = new \Google_Service_Sheets_BatchUpdateSpreadsheetRequest(array(
+			'requests' => array(
+				'deleteDimension'=>array(
+					'range'=>array(
+						'sheetId' => $newSheetProperties['sheetId'],
+						'dimension' => 'ROWS',
+						'startIndex' => 1,
+						// 'endIndex' => 1000,
+					)
+				)
+			)
+		));
+		$response = $helper->gs()->spreadsheets->batchUpdate($spreadsheet_id, $requestBody);
+		$this->plugin->msg( 'DONE.' );
+
+
+// // B2:B3 を更新
+// $value = new \Google_Service_Sheets_ValueRange();
+// $value->setValues([ 'values' => [ 'aaaa', 'bbbb' ] ]);
+// $response = $helper->gs()->spreadsheets_values->update($spreadsheet_id, 'sitemap!B2', $value, [ 'valueInputOption' => 'USER_ENTERED' ] );
+
+return;
 
 		$objPHPExcel->setActiveSheetIndex(0);
 		$objSheet = $objPHPExcel->getActiveSheet();

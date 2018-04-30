@@ -220,8 +220,11 @@ class main{
 
 	/**
 	 * 進捗メッセージを表示する
+	 * PXコマンドによる手動変換実行時に、送られた `$message` を標準出力します。
+	 * 自然変換実行時は、メッセージは表示されず捨てられます。
+	 * @param string $message メッセージ文字列
 	 */
-	private function msg( $message = '' ){
+	public function msg( $message = '' ){
 		if($this->show_progress_flg){
 			if( is_float($message) || is_int($message) || is_string($message) ){
 				echo $message."\n";
