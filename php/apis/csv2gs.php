@@ -76,6 +76,9 @@ class csv2gs{
 						'title' => 'sitemap-'.date('Ymd-His'),
 						'index' => 0,
 						'sheetType' => 'GRID',
+						'gridProperties' => array(
+							'columnCount' => ( count($table_definition['col_define']) + $this->get_max_depth() + 3 ),
+						),
 						'hidden' => false,
 					)
 				)
@@ -107,10 +110,10 @@ class csv2gs{
 
 
 		$this->default_cell_style_boarder = array(// 罫線の一括指定
-			'top'     => array('style' => 'SOLID_THICK'),
-			'bottom'  => array('style' => 'SOLID_THICK'),
-			'left'    => array('style' => 'SOLID_THICK'),
-			'right'   => array('style' => 'SOLID_THICK'),
+			'top'     => array('style' => 'SOLID'),
+			'bottom'  => array('style' => 'SOLID'),
+			'left'    => array('style' => 'SOLID'),
+			'right'   => array('style' => 'SOLID'),
 		);
 
 		$rows = array();

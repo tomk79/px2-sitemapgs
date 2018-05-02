@@ -102,11 +102,15 @@ class mainTest extends PHPUnit_Framework_TestCase{
 		$all_rows = $response->getValues();
 		// var_dump($all_rows);
 
+		$this->assertEquals( $all_rows[8-1][0], 'id' );
+		$this->assertEquals( $all_rows[8-1][1], 'title' );
+		$this->assertEquals( $all_rows[8-1][27], 'custom_006' );
 		$this->assertEquals( $all_rows[9-1][1], 'ホーム' );
 		$this->assertEquals( $all_rows[10-1][2], 'はじめに' );
 		$this->assertEquals( $all_rows[16-1][11], '/sample_pages/training/' );
 		$this->assertEquals( $all_rows[23-1][18], '1' );
 		$this->assertEquals( $all_rows[35-1][22], 'custom-27' );
+		$this->assertEquals( $all_rows[35-1][27], 'custom-27' );
 		$this->assertEquals( $all_rows[39-1][0], 'EndOfData' );
 
 	} // testCsv2GsConvert()

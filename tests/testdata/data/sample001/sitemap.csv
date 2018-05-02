@@ -1,30 +1,30 @@
-"* path","* content","* id","* title","* title_breadcrumb","* title_h1","* title_label","* title_full","* custom_001","* logical_path","* list_flg","* layout","* orderby","* keywords","* description","* category_top_flg","* role","* proc_type","* **delete_flg"
-"/index.html",,,"ホーム",,,,,"custom-1",,1,"top",,,,,,,
-"/sample_pages/index.html",,,"はじめに",,,,,"custom-2",,1,,,"getstart, sample","はじめて Pickles 2 を使う方のための情報をご紹介します。",1,,,
-"/sample_pages/getstart/try_sitemap.html",,,"サイトマップを編集してみよう",,,,,"custom-3","/sample_pages/index.html",1,,,"getstart, sample","サイトマップの編集方法をご紹介します。",,,,
-"/sample_pages/getstart/try_theme.html",,,"テーマを編集してみよう",,,,,"custom-4","/sample_pages/index.html",1,,,"getstart, sample","テーマの編集方法をご紹介します。",,,,
-"/sample_pages/getstart/try_contents.html",,,"コンテンツを編集してみよう",,,,,"custom-5","/sample_pages/index.html",1,,,"getstart, sample","コンテンツの編集方法をご紹介します。",,,,
-"/sample_pages/getstart/try_publish.html",,,"パブリッシュしてみよう",,,,,"custom-6","/sample_pages/index.html",1,,,"getstart, sample","パブリッシュの方法をご紹介します。",,,,
-"/sample_pages/getstart/try_your_project.html",,,"自分のサイトを編集しよう",,,,,"custom-7","/sample_pages/index.html",1,,,"getstart, sample","サンプルコンテンツを削除して、オリジナルのサイトを制作する手順をご紹介します。",,,,
-"/sample_pages/training/index.html",,,"編集してみょう",,,,,"custom-8",,1,,,"training, チュートリアル","ブランクなページを編集してみてください。",1,,,
-"/sample_pages/training/training_001.html",,,"練習ページ1",,,,,"custom-9","/sample_pages/training/index.html",1,,,"training, チュートリアル","ブランクページ 1。",,,,
-"/sample_pages/training/training_002.html",,,"練習ページ2",,,,,"custom-10","/sample_pages/training/index.html",1,,,"training, チュートリアル","ブランクページ 2。",,,,
-"/sample_pages/training/training_003.html",,,"練習ページ3",,,,,"custom-11","/sample_pages/training/index.html",1,,,"training, チュートリアル","ブランクページ 3。",,,,
-"/sample_pages/training/training_004.html",,,"練習ページ4",,,,,"custom-12","/sample_pages/training/index.html",1,,,"training, チュートリアル","ブランクページ 4。",,,,
-"/sample_pages/training/training_005.html",,,"練習ページ5",,,,,"custom-13","/sample_pages/training/index.html",1,,,"training, チュートリアル","ブランクページ 5。",,,,
-"/sample_pages/training/training_006.html",,,"練習ページ6",,,,,"custom-14","/sample_pages/training/index.html",1,,,"training, チュートリアル","ブランクページ 6。",,,,
-"/sample_pages/samples/index.html",,,"さまざまな機能",,,,,"custom-15",,1,,,"実装サンプル, 機能紹介","Pickles 2 のさまざまな機能をご紹介します。",1,,,
-"/sample_pages/samples/php_code.html",,,"PHPコード埋め込み",,,,,"custom-16","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","PHPコードでHTMLを生成するサンプルです。",,,,
-"/sample_pages/samples/markdown.html",,,"Markdown記法",,,,,"custom-17","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","Markdown言語でコンテンツを編集するサンプルです。",,,,
+"* path","* content","* id","* title","* title_breadcrumb","* title_h1","* title_label","* title_full","* custom_001","* logical_path","* list_flg","* layout","* orderby","* keywords","* description","* category_top_flg","* role","* proc_type","* **delete_flg","* custom_002","* custom_003","* custom_004","* custom_005","* custom_006"
+"/index.html",,,"ホーム",,,,,"custom-1",,1,"top",,,,,,,,"custom-1","custom-1","custom-1","custom-1","custom-1"
+"/sample_pages/index.html",,,"はじめに",,,,,"custom-2",,1,,,"getstart, sample","はじめて Pickles 2 を使う方のための情報をご紹介します。",1,,,,"custom-2","custom-2","custom-2","custom-2","custom-2"
+"/sample_pages/getstart/try_sitemap.html",,,"サイトマップを編集してみよう",,,,,"custom-3","/sample_pages/index.html",1,,,"getstart, sample","サイトマップの編集方法をご紹介します。",,,,,"custom-3","custom-3","custom-3","custom-3","custom-3"
+"/sample_pages/getstart/try_theme.html",,,"テーマを編集してみよう",,,,,"custom-4","/sample_pages/index.html",1,,,"getstart, sample","テーマの編集方法をご紹介します。",,,,,"custom-4","custom-4","custom-4","custom-4","custom-4"
+"/sample_pages/getstart/try_contents.html",,,"コンテンツを編集してみよう",,,,,"custom-5","/sample_pages/index.html",1,,,"getstart, sample","コンテンツの編集方法をご紹介します。",,,,,"custom-5","custom-5","custom-5","custom-5","custom-5"
+"/sample_pages/getstart/try_publish.html",,,"パブリッシュしてみよう",,,,,"custom-6","/sample_pages/index.html",1,,,"getstart, sample","パブリッシュの方法をご紹介します。",,,,,"custom-6","custom-6","custom-6","custom-6","custom-6"
+"/sample_pages/getstart/try_your_project.html",,,"自分のサイトを編集しよう",,,,,"custom-7","/sample_pages/index.html",1,,,"getstart, sample","サンプルコンテンツを削除して、オリジナルのサイトを制作する手順をご紹介します。",,,,,"custom-7","custom-7","custom-7","custom-7","custom-7"
+"/sample_pages/training/index.html",,,"編集してみょう",,,,,"custom-8",,1,,,"training, チュートリアル","ブランクなページを編集してみてください。",1,,,,"custom-8","custom-8","custom-8","custom-8","custom-8"
+"/sample_pages/training/training_001.html",,,"練習ページ1",,,,,"custom-9","/sample_pages/training/index.html",1,,,"training, チュートリアル","ブランクページ 1。",,,,,"custom-9","custom-9","custom-9","custom-9","custom-9"
+"/sample_pages/training/training_002.html",,,"練習ページ2",,,,,"custom-10","/sample_pages/training/index.html",1,,,"training, チュートリアル","ブランクページ 2。",,,,,"custom-10","custom-10","custom-10","custom-10","custom-10"
+"/sample_pages/training/training_003.html",,,"練習ページ3",,,,,"custom-11","/sample_pages/training/index.html",1,,,"training, チュートリアル","ブランクページ 3。",,,,,"custom-11","custom-11","custom-11","custom-11","custom-11"
+"/sample_pages/training/training_004.html",,,"練習ページ4",,,,,"custom-12","/sample_pages/training/index.html",1,,,"training, チュートリアル","ブランクページ 4。",,,,,"custom-12","custom-12","custom-12","custom-12","custom-12"
+"/sample_pages/training/training_005.html",,,"練習ページ5",,,,,"custom-13","/sample_pages/training/index.html",1,,,"training, チュートリアル","ブランクページ 5。",,,,,"custom-13","custom-13","custom-13","custom-13","custom-13"
+"/sample_pages/training/training_006.html",,,"練習ページ6",,,,,"custom-14","/sample_pages/training/index.html",1,,,"training, チュートリアル","ブランクページ 6。",,,,,"custom-14","custom-14","custom-14","custom-14","custom-14"
+"/sample_pages/samples/index.html",,,"さまざまな機能",,,,,"custom-15",,1,,,"実装サンプル, 機能紹介","Pickles 2 のさまざまな機能をご紹介します。",1,,,,"custom-15","custom-15","custom-15","custom-15","custom-15"
+"/sample_pages/samples/php_code.html",,,"PHPコード埋め込み",,,,,"custom-16","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","PHPコードでHTMLを生成するサンプルです。",,,,,"custom-16","custom-16","custom-16","custom-16","custom-16"
+"/sample_pages/samples/markdown.html",,,"Markdown記法",,,,,"custom-17","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","Markdown言語でコンテンツを編集するサンプルです。",,,,,"custom-17","custom-17","custom-17","custom-17","custom-17"
 "/sample_pages/samples/page_title.html",,,"ページタイトル","ページタイトル(パンくずのラベル)","ページタイトル
- (H1見出しのラベル)","ページタイトル(リンクのラベル)",,"custom-18","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","ページのタイトルを自在にコントロールするサンプルです。",,,,
-"alias:/sample_pages/samples/alias/index.html",,"alias_sample","エイリアス機能",,,,,"custom-19","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","エイリアス機能のサンプルです。",,,,
-"/sample_pages/samples/alias/index.html",,,"エイリアスの実体ページ",,,,,"custom-20","/sample_pages/samples/index.html>alias_sample",1,,,"実装サンプル, 機能紹介","エイリアス機能の転送先ページです。",,,,
-"/sample_pages/samples/dynamic_path/{*}","/sample_pages/samples/dynamic_path/index.html",,"ダイナミックパス機能",,,,,"custom-21","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","ダイナミックパス機能をご紹介します。",,,,
-"/sample_pages/samples/shared_content.html",,,"共有コンテンツ",,,,,"custom-22","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","共通のコンテンツを表示するサンプルの扉ページです。",,,,
-"/sample_pages/samples/shared_content_subpages/sub1.html","/sample_pages/samples/shared_content.html",,"共有コンテンツ-1",,,,,"custom-23","/sample_pages/samples/index.html>/sample_pages/samples/shared_content.html",1,,,"実装サンプル, 機能紹介","共通のコンテンツを表示するサンプルです。その1",,,,
-"/sample_pages/samples/shared_content_subpages/sub2/sub2.html","/sample_pages/samples/shared_content.html",,"共有コンテンツ-2",,,,,"custom-24","/sample_pages/samples/index.html>/sample_pages/samples/shared_content.html",1,,,"実装サンプル, 機能紹介","共通のコンテンツを表示するサンプルです。その2",,,,
-"/sample_pages/samples/ssi.html",,,"SSI",,,,,"custom-25","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","インクルード機能のサンプルです。",,,,
-"/sample_pages/samples/popup.html",,,"Popup Page",,,,,"custom-26","/sample_pages/samples/index.html",1,"popup",,"実装サンプル, 機能紹介","ポップアップページのサンプルです。",,,,
-"/sample_pages/samples/ext_htm.htm",,,"拡張子 *.htm",,,,,"custom-27","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","htm拡張子のページを描画するサンプルです。",,,,
-"/sample_pages/help/index.html",,,"ヘルプ",,,,,"custom-28",,1,,,"help","ヘルプページです。",,,,
+ (H1見出しのラベル)","ページタイトル(リンクのラベル)",,"custom-18","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","ページのタイトルを自在にコントロールするサンプルです。",,,,,"custom-18","custom-18","custom-18","custom-18","custom-18"
+"alias:/sample_pages/samples/alias/index.html",,"alias_sample","エイリアス機能",,,,,"custom-19","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","エイリアス機能のサンプルです。",,,,,"custom-19","custom-19","custom-19","custom-19","custom-19"
+"/sample_pages/samples/alias/index.html",,,"エイリアスの実体ページ",,,,,"custom-20","/sample_pages/samples/index.html>alias_sample",1,,,"実装サンプル, 機能紹介","エイリアス機能の転送先ページです。",,,,,"custom-20","custom-20","custom-20","custom-20","custom-20"
+"/sample_pages/samples/dynamic_path/{*}","/sample_pages/samples/dynamic_path/index.html",,"ダイナミックパス機能",,,,,"custom-21","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","ダイナミックパス機能をご紹介します。",,,,,"custom-21","custom-21","custom-21","custom-21","custom-21"
+"/sample_pages/samples/shared_content.html",,,"共有コンテンツ",,,,,"custom-22","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","共通のコンテンツを表示するサンプルの扉ページです。",,,,,"custom-22","custom-22","custom-22","custom-22","custom-22"
+"/sample_pages/samples/shared_content_subpages/sub1.html","/sample_pages/samples/shared_content.html",,"共有コンテンツ-1",,,,,"custom-23","/sample_pages/samples/index.html>/sample_pages/samples/shared_content.html",1,,,"実装サンプル, 機能紹介","共通のコンテンツを表示するサンプルです。その1",,,,,"custom-23","custom-23","custom-23","custom-23","custom-23"
+"/sample_pages/samples/shared_content_subpages/sub2/sub2.html","/sample_pages/samples/shared_content.html",,"共有コンテンツ-2",,,,,"custom-24","/sample_pages/samples/index.html>/sample_pages/samples/shared_content.html",1,,,"実装サンプル, 機能紹介","共通のコンテンツを表示するサンプルです。その2",,,,,"custom-24","custom-24","custom-24","custom-24","custom-24"
+"/sample_pages/samples/ssi.html",,,"SSI",,,,,"custom-25","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","インクルード機能のサンプルです。",,,,,"custom-25","custom-25","custom-25","custom-25","custom-25"
+"/sample_pages/samples/popup.html",,,"Popup Page",,,,,"custom-26","/sample_pages/samples/index.html",1,"popup",,"実装サンプル, 機能紹介","ポップアップページのサンプルです。",,,,,"custom-26","custom-26","custom-26","custom-26","custom-26"
+"/sample_pages/samples/ext_htm.htm",,,"拡張子 *.htm",,,,,"custom-27","/sample_pages/samples/index.html",1,,,"実装サンプル, 機能紹介","htm拡張子のページを描画するサンプルです。",,,,,"custom-27","custom-27","custom-27","custom-27","custom-27"
+"/sample_pages/help/index.html",,,"ヘルプ",,,,,"custom-28",,1,,,"help","ヘルプページです。",,,,,"custom-28","custom-28","custom-28","custom-28","custom-28"
