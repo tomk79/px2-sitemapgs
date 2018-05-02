@@ -172,5 +172,5 @@ $ php ./vendor/phpunit/phpunit/phpunit
 テストコマンドを実行する前に、次の準備をしてください。
 
 - テスト実行に使用する `service-account.json` を、 `tests/testdata/data/service-account.json` に保存してください。
-- `tests/testdata/standard/px-files/sitemaps/sitemap.gsheet` に含まれる `doc_id` を テスト実行に使用する Googleスプレッドシート のIDで上書きしてください。
+- `tests/testdata/data/sitemap.gsheet` に含まれる `doc_id` を テスト実行に使用する Googleスプレッドシート のIDで上書きしてください。
 - テスト実行に使用する Googleスプレッドシート に、シート `sitemap` を作成してください。内容は空白のままにします。
