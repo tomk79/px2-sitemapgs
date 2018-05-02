@@ -144,7 +144,7 @@ Pickles 2 のサイトマップフォルダ `px-files/sitemaps/` に、拡張子
 
 ## 更新履歴 - Change log
 
-### px2-sitemapexcel 0.0.1 (リリース日未定)
+### tomk79/px2-sitemapgs 0.0.1 (2018年5月3日)
 
 - Initial Release.
 
