@@ -55,8 +55,9 @@ return call_user_func( function(){
 
 ## PX Commands
 
-- `?PX=sitemapgs.gs2csv` : GoogleスプレッドシートからCSVへの変換を手動で実行する。
-- `?PX=sitemapgs.csv2gs` : CSVからGoogleスプレッドシートへの変換を手動で実行する。
+- `?PX=sitemapgs.gs2csv`, `?PX=sitemapgs.pull` : Googleスプレッドシート から CSV への変換を手動で実行する。
+- `?PX=sitemapgs.csv2gs`, `?PX=sitemapgs.push` : CSV から Googleスプレッドシート への変換を手動で実行する。
+
 
 ## 制約
 

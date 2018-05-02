@@ -31,9 +31,11 @@ class main{
 			$direction = null;
 			switch(@strtolower($command[1])){
 				case 'gs2csv':
+				case 'pull':
 					$direction = 'gs2csv';
 					break;
 				case 'csv2gs':
+				case 'push':
 					$direction = 'csv2gs';
 					break;
 			}
