@@ -335,10 +335,10 @@ class csv2gs{
 		));
 		$response = $helper->gs()->spreadsheets->batchUpdate($spreadsheet_id, $requestBody);
 
-		// titleの定義セルを統合
+		// シート行列の整形
 		$requestBody = new \Google_Service_Sheets_BatchUpdateSpreadsheetRequest(array(
 			'requests' => array(
-				// 論理定義行
+				// titleの定義セルを統合: 論理定義行
 				array(
 					'mergeCells'=>array(
 						'range' => array(
@@ -351,7 +351,7 @@ class csv2gs{
 						'mergeType' => 'MERGE_ALL',
 					)
 				),
-				// 物理定義行
+				// titleの定義セルを統合: 物理定義行
 				array(
 					'mergeCells'=>array(
 						'range' => array(
@@ -364,6 +364,95 @@ class csv2gs{
 						'mergeType' => 'MERGE_ALL',
 					)
 				),
+				// 列の幅を整える
+				array(
+					'updateSheetProperties'=>array(
+						'properties' => array(
+							'sheetId' => $newSheetProperties['sheetId'],
+							'gridProperties' => array(
+								'frozenRowCount' => 8,
+								'frozenColumnCount' => 1,
+							),
+						),
+						'fields' => 'gridProperties.frozenRowCount,gridProperties.frozenColumnCount',
+					)
+				),
+				// 列の幅を整える: title 階層表現 の段を狭く
+				array(
+					'updateDimensionProperties'=>array(
+						'range' => array(
+							'sheetId' => $newSheetProperties['sheetId'],
+							'dimension' => 'COLUMNS',
+							'startIndex' => 1,
+							'endIndex' => 1 + $this->get_max_depth(),
+						),
+						'properties' => array(
+							'pixelSize' => 20,
+						),
+						'fields' => 'pixelSize',
+					)
+				),
+				// 列の幅を整える: title 階層表現 の終端列を広く
+				array(
+					'updateDimensionProperties'=>array(
+						'range' => array(
+							'sheetId' => $newSheetProperties['sheetId'],
+							'dimension' => 'COLUMNS',
+							'startIndex' => 1 + $this->get_max_depth(),
+							'endIndex' => 1 + $this->get_max_depth() + 1,
+						),
+						'properties' => array(
+							'pixelSize' => 200,
+						),
+						'fields' => 'pixelSize',
+					)
+				),
+				// 列の幅を整える: title_* を狭く
+				array(
+					'updateDimensionProperties'=>array(
+						'range' => array(
+							'sheetId' => $newSheetProperties['sheetId'],
+							'dimension' => 'COLUMNS',
+							'startIndex' => $table_definition['col_define']['title_h1']['col_idx'],
+							'endIndex' => $table_definition['col_define']['title_full']['col_idx'] + 1,
+						),
+						'properties' => array(
+							'pixelSize' => 20,
+						),
+						'fields' => 'pixelSize',
+					)
+				),
+				// 列の幅を整える: path
+				array(
+					'updateDimensionProperties'=>array(
+						'range' => array(
+							'sheetId' => $newSheetProperties['sheetId'],
+							'dimension' => 'COLUMNS',
+							'startIndex' => $table_definition['col_define']['path']['col_idx'],
+							'endIndex' => $table_definition['col_define']['path']['col_idx'] + 1,
+						),
+						'properties' => array(
+							'pixelSize' => 300,
+						),
+						'fields' => 'pixelSize',
+					)
+				),
+				// 列の幅を整える: keywords, description
+				array(
+					'updateDimensionProperties'=>array(
+						'range' => array(
+							'sheetId' => $newSheetProperties['sheetId'],
+							'dimension' => 'COLUMNS',
+							'startIndex' => $table_definition['col_define']['keywords']['col_idx'],
+							'endIndex' => $table_definition['col_define']['description']['col_idx'] + 1,
+						),
+						'properties' => array(
+							'pixelSize' => 220,
+						),
+						'fields' => 'pixelSize',
+					)
+				),
+
 			)
 		));
 		$response = $helper->gs()->spreadsheets->batchUpdate($spreadsheet_id, $requestBody);
@@ -599,16 +688,18 @@ class csv2gs{
 		$rtn['col_define'] = array();
 
 		$current_col = 'A';
+		$current_colidx = 0;
 
-		$rtn['col_define']['id'] = array( 'col'=>($current_col++) );
-		$rtn['col_define']['title'] = array( 'col'=>($current_col++) );
+		$rtn['col_define']['id'] = array( 'col'=>($current_col++), 'col_idx'=>($current_colidx++) );
+		$rtn['col_define']['title'] = array( 'col'=>($current_col++), 'col_idx'=>($current_colidx++) );
 		for($i = 0; $i<$this->get_max_depth(); $i++){
 			$current_col++;
+			$current_colidx++;
 		}
-		$rtn['col_define']['title_h1'] = array( 'col'=>($current_col++) );
-		$rtn['col_define']['title_label'] = array( 'col'=>($current_col++) );
-		$rtn['col_define']['title_breadcrumb'] = array( 'col'=>($current_col++) );
-		$rtn['col_define']['title_full'] = array( 'col'=>($current_col++) );
+		$rtn['col_define']['title_h1'] = array( 'col'=>($current_col++), 'col_idx'=>($current_colidx++) );
+		$rtn['col_define']['title_label'] = array( 'col'=>($current_col++), 'col_idx'=>($current_colidx++) );
+		$rtn['col_define']['title_breadcrumb'] = array( 'col'=>($current_col++), 'col_idx'=>($current_colidx++) );
+		$rtn['col_define']['title_full'] = array( 'col'=>($current_col++), 'col_idx'=>($current_colidx++) );
 
 		$sitemap_definition = $this->get_sitemap_definition();
 		foreach($sitemap_definition as $def_row){
@@ -619,6 +710,7 @@ class csv2gs{
 
 			if(strlen(@$rtn['col_define'][$def_row['key']]['col'])){continue;}
 			$rtn['col_define'][$def_row['key']]['col'] = ($current_col++);
+			$rtn['col_define'][$def_row['key']]['col_idx'] = ($current_colidx++);
 		}
 
 		return $rtn;
