@@ -97,7 +97,17 @@ class mainTest extends PHPUnit_Framework_TestCase{
 			))
 		);
 
-		$this->assertEquals( 1, 1 );
+		// シート 'sitemap' から全行を取得
+		$response = $this->gshelper->gs()->spreadsheets_values->get($this->gshelper->get_spreadsheet_id(), 'sitemap'); // 範囲を省略すると全部取得する
+		$all_rows = $response->getValues();
+		// var_dump($all_rows);
+
+		$this->assertEquals( $all_rows[9-1][1], 'ホーム' );
+		$this->assertEquals( $all_rows[10-1][2], 'はじめに' );
+		$this->assertEquals( $all_rows[16-1][11], '/sample_pages/training/' );
+		$this->assertEquals( $all_rows[23-1][18], '1' );
+		$this->assertEquals( $all_rows[35-1][22], 'custom-27' );
+		$this->assertEquals( $all_rows[39-1][0], 'EndOfData' );
 
 	} // testCsv2GsConvert()
 
@@ -107,7 +117,21 @@ class mainTest extends PHPUnit_Framework_TestCase{
 	 */
 	public function testGs2CsvConvert(){
 
-		// トップページを実行
+		// GS上の値を書き換えてみる
+		$value = new \Google_Service_Sheets_ValueRange();
+		$value->setValues(array(
+			'values' => array('HOME'),
+		));
+		$response = $this->gshelper->gs()->spreadsheets_values->update(
+			$this->gshelper->get_spreadsheet_id(),
+			'sitemap!B9',
+			$value,
+			array(
+				'valueInputOption' => 'USER_ENTERED'
+			)
+		);
+
+		// Google スプレッドシート から CSV への変換
 		$output = $this->testhelper->passthru( [
 			'php',
 			__DIR__.'/testdata/standard/.px_execute.php' ,
@@ -115,7 +139,18 @@ class mainTest extends PHPUnit_Framework_TestCase{
 		] );
 		// var_dump($output);
 
-		$this->assertEquals( 1, 1 );
+		$csv = $this->fs->read_csv( __DIR__.'/testdata/standard/px-files/sitemaps/sitemap.csv' );
+		// var_dump($csv);
+
+		$this->assertEquals( $csv[1-1][0], '* path' );
+		$this->assertEquals( $csv[1-1][17], '* **delete_flg' );
+		$this->assertEquals( $csv[1-1][18], '* custom_001' );
+		$this->assertEquals( $csv[2-1][3], 'HOME' );//テストコード上で書き換えられている値
+		$this->assertEquals( $csv[5-1][13], 'テーマの編集方法をご紹介します。' );
+		$this->assertEquals( $csv[23-1][3], '共有コンテンツ' );
+		$this->assertEquals( $csv[23-1][4], '' );
+		$this->assertEquals( $csv[27-1][0], '/sample_pages/samples/popup.html' );
+		$this->assertEquals( $csv[29-1][18], 'custom-28' );
 
 	} // testGs2CsvConvert()
 
