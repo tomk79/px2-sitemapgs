@@ -27,6 +27,20 @@ Pickles2 に、サイトマップを Google スプレッドシート で編集�
 
 ※準備中
 
+Pickles 2 のサイトマップフォルダ `px-files/sitemaps/` に、拡張子 `.gsheet` のファイルを作成します。 このファイル名は、`.csv` のファイル名と対応するように命名してください。 たとえば、 `sitemap.csv` に対応するファイル名は `sitemap.gsheet` になります。
+
+`.gsheet` の内容は、次のような JSON ファイルです。 これは、 Google Drive のアプリがローカルディスクとファイルを同期する際に作成されるファイルと同じです。 `tomk79/px2-sitemapgs` は、このうちの `doc_id` の値を参照します。
+
+`xxxxxxx` の箇所に、スプレッドシートのID を記述してください。
+
+```json
+{
+    "url": "https://docs.google.com/open?id=xxxxxxx",
+    "doc_id": "xxxxxxx",
+    "email": "hogefuga@example.com"
+}
+```
+
 
 ## オプション - Options
 
@@ -97,3 +111,9 @@ MIT License
 ```
 $ php ./vendor/phpunit/phpunit/phpunit
 ```
+
+テストコマンドを実行する前に、次の準備をしてください。
+
+- テスト実行に使用する `service-account.json` を、 `tests/testdata/data/service-account.json` に保存してください。
+- `tests/testdata/standard/px-files/sitemaps/sitemap.gsheet` に含まれる `doc_id` を テスト実行に使用する Googleスプレッドシート のIDで上書きしてください。
+- テスト実行に使用する Googleスプレッドシート に、シート `sitemap` を作成してください。内容は空白のままにします。

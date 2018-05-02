@@ -2,4 +2,4 @@
 Thumbs.db
 /vendor/
 composer.lock
-/tests/testdata/data/
+/tests/testdata/data/_*

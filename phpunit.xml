@@ -2,6 +2,7 @@
 	<testsuites>
 		<testsuite>
 			<file>tests/mainTest.php</file>
+			<file>tests/cleaningTest.php</file>
 		</testsuite>
 	</testsuites>
 </phpunit>

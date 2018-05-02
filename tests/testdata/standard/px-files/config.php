@@ -89,7 +89,7 @@ return call_user_func( function(){
 
 		// sitemapGS
 		'tomk79\pickles2\sitemap_gs\main::exec('.json_encode(array(
-			'google_application_credentials' => '../data/sample001/credential.json',
+			'google_application_credentials' => '../data/service-account.json',
 			'csv_expire' => 10,
 		)).')',
 	];

@@ -44,8 +44,16 @@ class pxplugin_sitemapGs_helper_GsHelper{
 
 		$file_bin = file_get_contents($path);
 		$json = json_decode(trim($file_bin));
+		$this->spreadsheet_id = @$json->doc_id;
 
-		return @$json->doc_id;
+		return $this->spreadsheet_id;
+	}
+
+	/**
+	 * Spreadsheet ID を取得する
+	 */
+	public function get_spreadsheet_id(){
+		return $this->spreadsheet_id;
 	}
 
 }
