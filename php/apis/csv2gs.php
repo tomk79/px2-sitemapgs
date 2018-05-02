@@ -335,6 +335,39 @@ class csv2gs{
 		));
 		$response = $helper->gs()->spreadsheets->batchUpdate($spreadsheet_id, $requestBody);
 
+		// titleの定義セルを統合
+		$requestBody = new \Google_Service_Sheets_BatchUpdateSpreadsheetRequest(array(
+			'requests' => array(
+				// 論理定義行
+				array(
+					'mergeCells'=>array(
+						'range' => array(
+							'sheetId' => $newSheetProperties['sheetId'],
+							'startRowIndex' => 6,
+							'endRowIndex' => 7,
+							'startColumnIndex' => 1,
+							'endColumnIndex' => 1 + $this->get_max_depth() + 1,
+						),
+						'mergeType' => 'MERGE_ALL',
+					)
+				),
+				// 物理定義行
+				array(
+					'mergeCells'=>array(
+						'range' => array(
+							'sheetId' => $newSheetProperties['sheetId'],
+							'startRowIndex' => 7,
+							'endRowIndex' => 8,
+							'startColumnIndex' => 1,
+							'endColumnIndex' => 1 + $this->get_max_depth() + 1,
+						),
+						'mergeType' => 'MERGE_ALL',
+					)
+				),
+			)
+		));
+		$response = $helper->gs()->spreadsheets->batchUpdate($spreadsheet_id, $requestBody);
+
 		clearstatcache();
 
 		return $this;
