@@ -265,40 +265,12 @@ class csv2gs{
 		array_push($rows, $tmp_row);
 
 
-		// //セルの幅設定
-		// $objSheet->getColumnDimension($table_definition['col_define']['id']['col'])->setWidth(8);
-		// $objSheet->getColumnDimension($table_definition['col_define']['title']['col'])->setWidth(3);
-		// $tmp_col = $table_definition['col_define']['title']['col'];
-		// for($i = 0; $i < $this->get_max_depth(); $i ++){
-		// 	$tmp_col ++;
-		// 	if( $i+1 == $this->get_max_depth() ){
-		// 		$objSheet->getColumnDimension($tmp_col)->setWidth(20);
-		// 	}else{
-		// 		$objSheet->getColumnDimension($tmp_col)->setWidth(3);
-		// 	}
-		// }
-		// $objSheet->getColumnDimension(@$table_definition['col_define']['title_h1']['col'])->setWidth(2);
-		// $objSheet->getColumnDimension(@$table_definition['col_define']['title_label']['col'])->setWidth(2);
-		// $objSheet->getColumnDimension(@$table_definition['col_define']['title_breadcrumb']['col'])->setWidth(2);
-		// $objSheet->getColumnDimension(@$table_definition['col_define']['title_full']['col'])->setWidth(2);
-		// $objSheet->getColumnDimension(@$table_definition['col_define']['path']['col'])->setWidth(40);
-		// $objSheet->getColumnDimension(@$table_definition['col_define']['content']['col'])->setWidth(20);
-		// $objSheet->getColumnDimension(@$table_definition['col_define']['list_flg']['col'])->setWidth(3);
-		// $objSheet->getColumnDimension(@$table_definition['col_define']['layout']['col'])->setWidth(9);
-		// // $objSheet->getColumnDimension(@$table_definition['col_define']['extension']['col'])->setWidth(9);
-		// $objSheet->getColumnDimension(@$table_definition['col_define']['description']['col'])->setWidth(30);
-		// $objSheet->getColumnDimension(@$table_definition['col_define']['keywords']['col'])->setWidth(30);
-		// // $objSheet->getColumnDimension(@$table_definition['col_define']['auth_level']['col'])->setWidth(3);
-		// $objSheet->getColumnDimension(@$table_definition['col_define']['orderby']['col'])->setWidth(3);
-		// $objSheet->getColumnDimension(@$table_definition['col_define']['category_top_flg']['col'])->setWidth(3);
-
-		// // 行移動
-		// $this->current_row = $table_definition['row_data_start'];
-
 
 		// データ行を作成する
-		// var_dump( $this->site->get_sitemap() );
-		// $this->mk_gsheet_body($objSheet);
+		$gsheet_body_rows = $this->mk_gsheet_body();
+		foreach( $gsheet_body_rows as $gsheet_body_row ){
+			array_push( $rows, array('values'=>$gsheet_body_row) );
+		}
 
 
 		// データ行の終了を宣言
@@ -319,7 +291,7 @@ class csv2gs{
 					'textFormat'=>array(
 						'fontSize'=>8,
 					),
-			),
+				),
 			));
 
 			// title列の整形
@@ -401,25 +373,34 @@ class csv2gs{
 	}
 
 	/**
-	 * サイトマップをスキャンして、xlsxのデータ部分を作成する
+	 * サイトマップをスキャンして、Google Spreadsheet のデータ部分を作成する
 	 */
-	private function mk_gsheet_body($objSheet, $page_id = ''){
-		if(!is_string($page_id)){return false;}
+	private function mk_gsheet_body($page_id = ''){
+		$rows = array();
+		if(!is_string($page_id)){return $rows;}
 		$sitemap_definition = $this->get_sitemap_definition();
 		$table_definition = $this->get_table_definition();
 		// var_dump($this->site->get_sitemap());
 		$page_info = $this->site->get_page_info($page_id);
 		if(!is_array($page_info)){
-			return false;
+			 return $rows;
 		}
 		// var_dump($page_id);
 		// var_dump($page_info);
 
 		set_time_limit(30);
 
+		$tmp_row = array();
 		foreach( $table_definition['col_define'] as $def_row ){
-			$cellName = ($def_row['col']).$this->current_row;
 			$cellValue = @$page_info[$def_row['key']];
+			if(is_null($cellValue)){$cellValue = '';}
+			$cellStyle = array(
+				'borders'=>$this->default_cell_style_boarder,
+				'textFormat'=>array(
+					'fontSize'=>10,
+				),
+			);
+
 			switch($def_row['key']){
 				case 'title_h1':
 				case 'title_label':
@@ -427,97 +408,95 @@ class csv2gs{
 					if($cellValue == $page_info['title']){
 						$cellValue = '';
 					}
-					$objSheet->getCell($cellName)->setValue($cellValue);
-
-					// 罫線の一括指定
-					$objSheet->getStyle($cellName)->applyFromArray( $this->default_cell_style_boarder );
+					array_push($tmp_row, array(
+						'userEnteredValue'=>array(
+							'stringValue'=>$cellValue,
+						),
+						'userEnteredFormat'=>$cellStyle,
+					));
 					break;
 				case 'title':
 					// 罫線を引く
-					$tmp_col = $def_row['col'];
-					for($i = 0; $i <= $this->get_max_depth(); $i ++ ){
-						$tmp_border_style = array(
-							'borders' => array(
-								'top'     => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
-								'bottom'  => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
-								'left'    => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
-								'right'   => array('style' => \PHPExcel_Style_Border::BORDER_THIN, 'color'=>array('rgb'=>'dddddd')),
-							)
-						);
-						if($i != 0){
-							$tmp_border_style['borders']['left']['style'] = \PHPExcel_Style_Border::BORDER_THIN;
-							$tmp_border_style['borders']['left']['color'] = array('rgb'=>'dddddd');
-						}
-						if($i == $this->get_max_depth()){
-							$tmp_border_style['borders']['right']['style'] = \PHPExcel_Style_Border::BORDER_THIN;
-						}
-						$objSheet->getStyle($tmp_col.$this->current_row)->applyFromArray( $tmp_border_style );
-						$tmp_col ++;
-					}
-					unset($tmp_col);
-
+					$tmp_depth = 0;
 					if( !strlen($page_info['id']) ){
 						// トップページには細工をしない
 					}elseif( !strlen($page_info['logical_path']) ){
 						// トップページ以外でパンくず欄が空白のものは、
 						// 第2階層
-						$def_row['col'] ++;
+						$tmp_depth = 1;
 					}else{
 						$tmp_breadcrumb = explode('>',$page_info['logical_path']);
 						for($i = 0; $i <= count($tmp_breadcrumb); $i ++ ){
-							$def_row['col'] ++;
+							$tmp_depth ++;
 						}
 					}
-					$cellName = ($def_row['col']).$this->current_row;
+					for($i = 0; $i <= $this->get_max_depth(); $i ++ ){
+						array_push($tmp_row, array(
+							'userEnteredValue'=>array(
+								'stringValue'=>($tmp_depth==$i ? $cellValue : ''),
+							),
+							'userEnteredFormat'=>$cellStyle,
+						));
+						$tmp_col ++;
+					}
+					unset($tmp_depth);
 
-					$objSheet->getCell($cellName)->setValue($cellValue);
-					$objSheet->getStyle($cellName)->applyFromArray( array('borders'=>array(
-						'left'=>array( 'color'=>array('rgb'=>'666666') ) ,
-					)) );
-
-					// 罫線の一括指定
-					// $objSheet->getStyle($cellName)->applyFromArray( $this->default_cell_style_boarder );
 					break;
 				case 'content':
 					if($cellValue == $page_info['path']){
 						$cellValue = '';
 					}
-					$objSheet->getCell($cellName)->setValue($cellValue);
 
-					// 罫線の一括指定
-					$objSheet->getStyle($cellName)->applyFromArray( $this->default_cell_style_boarder );
+					array_push($tmp_row, array(
+						'userEnteredValue'=>array(
+							'stringValue'=>$cellValue,
+						),
+						'userEnteredFormat'=>$cellStyle,
+					));
 					break;
 				case 'path':
-					$objSheet->getCell($cellName)->setValue($this->repair_path($cellValue));
+					$cellValue = $this->repair_path($cellValue);
 
-					// 罫線の一括指定
-					$objSheet->getStyle($cellName)->applyFromArray( $this->default_cell_style_boarder );
+					array_push($tmp_row, array(
+						'userEnteredValue'=>array(
+							'stringValue'=>$cellValue,
+						),
+						'userEnteredFormat'=>$cellStyle,
+					));
 					break;
 				case 'id':
-					$objSheet->getCell($cellName)->setValue($this->repair_page_id($cellValue, $page_info['path']));
-
-					// 罫線の一括指定
-					$objSheet->getStyle($cellName)->applyFromArray( $this->default_cell_style_boarder );
+					$cellValue = $this->repair_page_id($cellValue, $page_info['path']);
+					array_push($tmp_row, array(
+						'userEnteredValue'=>array(
+							'stringValue'=>$cellValue,
+						),
+						'userEnteredFormat'=>$cellStyle,
+					));
 					break;
 				case 'keywords':
 				case 'description':
-					$objSheet->getCell($cellName)->setValue($cellValue);
-
 					// フォントサイズ
-					$objSheet->getStyle($cellName)->getFont()->setSize(9);
+					$cellStyle['textFormat']['fontSize'] = 9;
 
-					// 罫線の一括指定
-					$objSheet->getStyle($cellName)->applyFromArray( $this->default_cell_style_boarder );
+					array_push($tmp_row, array(
+						'userEnteredValue'=>array(
+							'stringValue'=>$cellValue,
+						),
+						'userEnteredFormat'=>$cellStyle,
+					));
 					break;
 				default:
-					$objSheet->getCell($cellName)->setValue($cellValue);
-
-					// 罫線の一括指定
-					$objSheet->getStyle($cellName)->applyFromArray( $this->default_cell_style_boarder );
+					array_push($tmp_row, array(
+						'userEnteredValue'=>array(
+							'stringValue'=>$cellValue,
+						),
+						'userEnteredFormat'=>$cellStyle,
+					));
 					break;
 			}
+
 		}
-		$this->current_row ++;
+		array_push($rows, $tmp_row);
 
 		$children = $this->site->get_children($page_id, array('filter'=>false));
 		// var_dump($children);
@@ -527,9 +506,9 @@ class csv2gs{
 				$this->px->error('ページIDがセットされていません。');
 				continue;
 			}
-			$this->mk_gsheet_body($objSheet, $page_info['id']);
+			$rows = array_merge($rows, $this->mk_gsheet_body($page_info['id']));
 		}
-		return true;
+		return $rows;
 	}// mk_gsheet_body()
 
 	/**
