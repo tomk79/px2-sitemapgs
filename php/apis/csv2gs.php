@@ -105,160 +105,260 @@ class csv2gs{
 		$this->plugin->msg( 'DONE.' );
 
 
-// // B2:B3 を更新
-// $value = new \Google_Service_Sheets_ValueRange();
-// $value->setValues([ 'values' => [ 'aaaa', 'bbbb' ] ]);
-// $response = $helper->gs()->spreadsheets_values->update($spreadsheet_id, 'sitemap!B2', $value, [ 'valueInputOption' => 'USER_ENTERED' ] );
-
-return;
-
-		$objPHPExcel->setActiveSheetIndex(0);
-		$objSheet = $objPHPExcel->getActiveSheet();
-
-		// フォント
-		$objSheet->getDefaultStyle()->getFont()->setName('メイリオ');
-
-		// フォントサイズ
-		$objSheet->getDefaultStyle()->getFont()->setSize(12);
-
-		// 背景色指定(準備)
-		$objSheet->getDefaultStyle()->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID);
-
-		// ウィンドウ枠を固定
-		$objSheet->freezePane('B'.$table_definition['row_data_start']);
 
 		$this->default_cell_style_boarder = array(// 罫線の一括指定
-			'borders' => array(
-				'top'     => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
-				'bottom'  => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
-				'left'    => array('style' => \PHPExcel_Style_Border::BORDER_THIN),
-				'right'   => array('style' => \PHPExcel_Style_Border::BORDER_THIN)
-			)
+			'top'     => array('style' => 'SOLID_THICK'),
+			'bottom'  => array('style' => 'SOLID_THICK'),
+			'left'    => array('style' => 'SOLID_THICK'),
+			'right'   => array('style' => 'SOLID_THICK'),
 		);
 
-		// 設定セル
-		$this->current_row = 1;
-		$objSheet->getCell('A'.$this->current_row)->setValue( $this->mk_config_string() );
-		$maxCol = 'A';
-		foreach( $table_definition['col_define'] as $col ){
-			if($maxCol < $col['col']){ $maxCol = $col['col']; }
-		}
-		$mainColor = preg_replace( '/^\#/', '', '#333333' );
-		for( $col = 'A'; $col <= $maxCol; $col ++ ){
-			$objSheet->getStyle($col.$this->current_row)->getFill()->getStartColor()->setRGB( $mainColor );
-			$objSheet->getStyle($col.$this->current_row)->getFont()->getColor()->setRGB( $mainColor );
-			$objSheet->getStyle($col.$this->current_row)->getFont()->setSize(8);
-		}
-		$objSheet->getRowDimension($this->current_row)->setRowHeight(10);
+		$rows = array();
 
-		$this->current_row ++;
-		$this->current_row ++;
+		// 設定セル
+		$tmp_row = array('values'=>array());
+		$col = -1;
+		foreach( $table_definition['col_define'] as $def_row ){
+			$col ++;
+			array_push($tmp_row['values'], array(
+				'userEnteredValue'=>array(
+					'stringValue'=>($col ? '' : $this->mk_config_string())
+				),
+				'userEnteredFormat'=>array(
+					'backgroundColor'=>array('red'=>0,'green'=>0,'blue'=>0,'alpha'=>0), // black
+					'textFormat'=>array(
+						'fontSize'=>6,
+					),
+				),
+			));
+
+			// title列の整形
+			if( $def_row['key'] == 'title' ){
+				$tmp_col = $def_row['col'];
+				for($i = 0; $i < $this->get_max_depth(); $i ++){
+					$tmp_col ++;
+					array_push($tmp_row['values'], array(
+						'userEnteredValue'=>array(
+							'stringValue'=>''
+						),
+						'userEnteredFormat'=>array(
+							'backgroundColor'=>array('red'=>0,'green'=>0,'blue'=>0,'alpha'=>0), // black
+							'textFormat'=>array(
+								'fontSize'=>6,
+							),
+						),
+					));
+				}
+				unset($tmp_col);
+			}
+		}
+		array_push($rows, $tmp_row);
+		array_push($rows, array('values' => array('userEnteredValue'=>array('stringValue'=>''))));
 
 		// シートタイトルセル
-		$sheetTitle = '「'.$this->px->conf()->name.'」 サイトマップ';
-		$objSheet->setTitle('sitemap');//←文字数制限がある。超えると落ちる。
-		$objSheet->getCell('A'.$this->current_row)->setValue($sheetTitle);
-		$objSheet->getStyle('A'.$this->current_row)->getFont()->setSize(24);
-		$this->current_row ++;
-		$objSheet->getCell('A'.$this->current_row)->setValue('Exported: '.@date('Y-m-d H:i:s', filemtime($this->path_csv)));
+		array_push($rows, array(
+			'values' => array(
+				array(
+					'userEnteredValue'=>array('stringValue'=>'「'.$this->px->conf()->name.'」 サイトマップ'),
+					'userEnteredFormat'=>array(
+						'textFormat'=>array(
+							'fontSize'=>24,
+							'bold'=>true,
+						),
+					),
+				),
+			)
+		));
+		array_push($rows, array(
+			'values' => array(
+				array(
+					'userEnteredValue'=>array('stringValue'=>'Exported: '.@date('Y-m-d H:i:s', filemtime($this->path_csv))),
+					'userEnteredFormat'=>array(
+						'textFormat'=>array(
+							'fontSize'=>10,
+						),
+					),
+				),
+			)
+		));
+		array_push($rows, array('values' => array('userEnteredValue'=>array('stringValue'=>''))));
+		array_push($rows, array('values' => array('userEnteredValue'=>array('stringValue'=>''))));
+
 
 		// 定義行
-		$this->current_row = $table_definition['row_definition'] - 1;
+		$tmp_row = array('values'=>array());
+		$col = -1;
 		foreach( $table_definition['col_define'] as $def_row ){
+			$col ++;
+
 			// 論理名
-			$cellName = ($def_row['col']).$this->current_row;
-			$objSheet->getCell($cellName)->setValue($def_row['name']);
-			$objSheet->getStyle($cellName)->getFill()->getStartColor()->setRGB('cccccc');
-
-			// 罫線の一括指定
-			$objSheet->getStyle($cellName)->applyFromArray( $this->default_cell_style_boarder );
+			array_push($tmp_row['values'], array(
+				'userEnteredValue'=>array(
+					'stringValue'=>$def_row['name']
+				),
+				'userEnteredFormat'=>array(
+					'backgroundColor'=>array('red'=>0.8,'green'=>0.8,'blue'=>0.8,'alpha'=>0), // #cccccc
+					'borders'=>$this->default_cell_style_boarder,
+				),
+			));
 
 			// title列の整形
 			if( $def_row['key'] == 'title' ){
 				$tmp_col = $def_row['col'];
 				for($i = 0; $i < $this->get_max_depth(); $i ++){
 					$tmp_col ++;
-					$objSheet->getStyle(($tmp_col).$this->current_row)->applyFromArray( $this->default_cell_style_boarder );
+					array_push($tmp_row['values'], array(
+						'userEnteredValue'=>array(
+							'stringValue'=>''
+						),
+						'userEnteredFormat'=>array(
+							'backgroundColor'=>array('red'=>0.8,'green'=>0.8,'blue'=>0.8,'alpha'=>0), // #cccccc
+							'borders'=>$this->default_cell_style_boarder,
+						),
+					));
 				}
-				$objSheet->mergeCells($cellName.':'.($tmp_col).$this->current_row);
 				unset($tmp_col);
 			}
 
 		}
-		$this->current_row ++;
+		array_push($rows, $tmp_row);
+
+
+		// 物理名
+		$tmp_row = array('values'=>array());
+		$col = -1;
 		foreach( $table_definition['col_define'] as $def_row ){
-			// 物理名
-			$cellName = ($def_row['col']).$this->current_row;
-			$objSheet->getCell($cellName)->setValue($def_row['key']);
-			$objSheet->getStyle($cellName)->getFill()->getStartColor()->setRGB('dddddd');
+			$col ++;
 
-			// 罫線の一括指定
-			$objSheet->getStyle($cellName)->applyFromArray( $this->default_cell_style_boarder );
+			// 論理名
+			array_push($tmp_row['values'], array(
+				'userEnteredValue'=>array(
+					'stringValue'=>$def_row['key']
+				),
+				'userEnteredFormat'=>array(
+					'backgroundColor'=>array('red'=>0.87,'green'=>0.87,'blue'=>0.87,'alpha'=>0), // #dddddd
+					'borders'=>$this->default_cell_style_boarder,
+				),
+			));
 
 			// title列の整形
 			if( $def_row['key'] == 'title' ){
 				$tmp_col = $def_row['col'];
 				for($i = 0; $i < $this->get_max_depth(); $i ++){
 					$tmp_col ++;
-					$objSheet->getStyle(($tmp_col).$this->current_row)->applyFromArray( $this->default_cell_style_boarder );
+					array_push($tmp_row['values'], array(
+						'userEnteredValue'=>array(
+							'stringValue'=>''
+						),
+						'userEnteredFormat'=>array(
+							'backgroundColor'=>array('red'=>0.87,'green'=>0.87,'blue'=>0.87,'alpha'=>0), // #dddddd
+							'borders'=>$this->default_cell_style_boarder,
+						),
+					));
+					// $objSheet->getStyle(($tmp_col).$this->current_row)->applyFromArray( $this->default_cell_style_boarder );
 				}
-				$objSheet->mergeCells($cellName.':'.($tmp_col).$this->current_row);
+				// $objSheet->mergeCells($cellName.':'.($tmp_col).$this->current_row);
 				unset($tmp_col);
 			}
 
 		}
+		array_push($rows, $tmp_row);
 
 
-		//セルの幅設定
-		$objSheet->getColumnDimension($table_definition['col_define']['id']['col'])->setWidth(8);
-		$objSheet->getColumnDimension($table_definition['col_define']['title']['col'])->setWidth(3);
-		$tmp_col = $table_definition['col_define']['title']['col'];
-		for($i = 0; $i < $this->get_max_depth(); $i ++){
-			$tmp_col ++;
-			if( $i+1 == $this->get_max_depth() ){
-				$objSheet->getColumnDimension($tmp_col)->setWidth(20);
-			}else{
-				$objSheet->getColumnDimension($tmp_col)->setWidth(3);
-			}
-		}
-		$objSheet->getColumnDimension(@$table_definition['col_define']['title_h1']['col'])->setWidth(2);
-		$objSheet->getColumnDimension(@$table_definition['col_define']['title_label']['col'])->setWidth(2);
-		$objSheet->getColumnDimension(@$table_definition['col_define']['title_breadcrumb']['col'])->setWidth(2);
-		$objSheet->getColumnDimension(@$table_definition['col_define']['title_full']['col'])->setWidth(2);
-		$objSheet->getColumnDimension(@$table_definition['col_define']['path']['col'])->setWidth(40);
-		$objSheet->getColumnDimension(@$table_definition['col_define']['content']['col'])->setWidth(20);
-		$objSheet->getColumnDimension(@$table_definition['col_define']['list_flg']['col'])->setWidth(3);
-		$objSheet->getColumnDimension(@$table_definition['col_define']['layout']['col'])->setWidth(9);
-		// $objSheet->getColumnDimension(@$table_definition['col_define']['extension']['col'])->setWidth(9);
-		$objSheet->getColumnDimension(@$table_definition['col_define']['description']['col'])->setWidth(30);
-		$objSheet->getColumnDimension(@$table_definition['col_define']['keywords']['col'])->setWidth(30);
-		// $objSheet->getColumnDimension(@$table_definition['col_define']['auth_level']['col'])->setWidth(3);
-		$objSheet->getColumnDimension(@$table_definition['col_define']['orderby']['col'])->setWidth(3);
-		$objSheet->getColumnDimension(@$table_definition['col_define']['category_top_flg']['col'])->setWidth(3);
+		// //セルの幅設定
+		// $objSheet->getColumnDimension($table_definition['col_define']['id']['col'])->setWidth(8);
+		// $objSheet->getColumnDimension($table_definition['col_define']['title']['col'])->setWidth(3);
+		// $tmp_col = $table_definition['col_define']['title']['col'];
+		// for($i = 0; $i < $this->get_max_depth(); $i ++){
+		// 	$tmp_col ++;
+		// 	if( $i+1 == $this->get_max_depth() ){
+		// 		$objSheet->getColumnDimension($tmp_col)->setWidth(20);
+		// 	}else{
+		// 		$objSheet->getColumnDimension($tmp_col)->setWidth(3);
+		// 	}
+		// }
+		// $objSheet->getColumnDimension(@$table_definition['col_define']['title_h1']['col'])->setWidth(2);
+		// $objSheet->getColumnDimension(@$table_definition['col_define']['title_label']['col'])->setWidth(2);
+		// $objSheet->getColumnDimension(@$table_definition['col_define']['title_breadcrumb']['col'])->setWidth(2);
+		// $objSheet->getColumnDimension(@$table_definition['col_define']['title_full']['col'])->setWidth(2);
+		// $objSheet->getColumnDimension(@$table_definition['col_define']['path']['col'])->setWidth(40);
+		// $objSheet->getColumnDimension(@$table_definition['col_define']['content']['col'])->setWidth(20);
+		// $objSheet->getColumnDimension(@$table_definition['col_define']['list_flg']['col'])->setWidth(3);
+		// $objSheet->getColumnDimension(@$table_definition['col_define']['layout']['col'])->setWidth(9);
+		// // $objSheet->getColumnDimension(@$table_definition['col_define']['extension']['col'])->setWidth(9);
+		// $objSheet->getColumnDimension(@$table_definition['col_define']['description']['col'])->setWidth(30);
+		// $objSheet->getColumnDimension(@$table_definition['col_define']['keywords']['col'])->setWidth(30);
+		// // $objSheet->getColumnDimension(@$table_definition['col_define']['auth_level']['col'])->setWidth(3);
+		// $objSheet->getColumnDimension(@$table_definition['col_define']['orderby']['col'])->setWidth(3);
+		// $objSheet->getColumnDimension(@$table_definition['col_define']['category_top_flg']['col'])->setWidth(3);
 
-		// 行移動
-		$this->current_row = $table_definition['row_data_start'];
+		// // 行移動
+		// $this->current_row = $table_definition['row_data_start'];
+
 
 		// データ行を作成する
 		// var_dump( $this->site->get_sitemap() );
-		$this->mk_xlsx_body($objSheet);
+		// $this->mk_gsheet_body($objSheet);
+
 
 		// データ行の終了を宣言
-		$this->current_row ++;
-		$this->current_row ++;
-		$objSheet->getCell('A'.$this->current_row)->setValue( 'EndOfData' );
-		for( $col = 'A'; $col <= $maxCol; $col ++ ){
-			$objSheet->getStyle($col.$this->current_row)->getFill()->getStartColor()->setRGB( 'dddddd' );
-			$objSheet->getStyle($col.$this->current_row)->getFont()->setSize(8);
+		array_push($rows, array('values' => array('userEnteredValue'=>array('stringValue'=>''))));
+		array_push($rows, array('values' => array('userEnteredValue'=>array('stringValue'=>''))));
+
+		$tmp_row = array('values'=>array());
+		$col = -1;
+		foreach( $table_definition['col_define'] as $def_row ){
+			$col ++;
+
+			array_push($tmp_row['values'], array(
+				'userEnteredValue'=>array(
+					'stringValue'=>($col ? '' : 'EndOfData')
+				),
+				'userEnteredFormat'=>array(
+					'backgroundColor'=>array('red'=>0.87,'green'=>0.87,'blue'=>0.87,'alpha'=>0), // #dddddd
+					'textFormat'=>array(
+						'fontSize'=>8,
+					),
+			),
+			));
+
+			// title列の整形
+			if( $def_row['key'] == 'title' ){
+				$tmp_col = $def_row['col'];
+				for($i = 0; $i < $this->get_max_depth(); $i ++){
+					$tmp_col ++;
+					array_push($tmp_row['values'], array(
+						'userEnteredValue'=>array(
+							'stringValue'=>''
+						),
+						'userEnteredFormat'=>array(
+							'backgroundColor'=>array('red'=>0.87,'green'=>0.87,'blue'=>0.87,'alpha'=>0), // #dddddd
+							'textFormat'=>array(
+								'fontSize'=>8,
+							),
+						),
+					));
+				}
+				unset($tmp_col);
+			}
+
 		}
-		$objSheet->getRowDimension($this->current_row)->setRowHeight(5);
-		$this->current_row ++;
+		array_push($rows, $tmp_row);
+		array_push($rows, array('values' => array('userEnteredValue'=>array('stringValue'=>''))));
 
 
 
-		$objPHPExcel->setActiveSheetIndex(0);//メインのセルを選択しなおし。
-
-		$helper->save($objPHPExcel, $path_spreadsheet, 'Excel2007');
+		// Google Spreadsheet に書き込む
+		$requestBody = new \Google_Service_Sheets_BatchUpdateSpreadsheetRequest(array(
+			'requests' => array(
+				'appendCells'=>array(
+					'sheetId' => $newSheetProperties['sheetId'],
+					'rows' => $rows,
+					'fields' => '*',
+				)
+			)
+		));
+		$response = $helper->gs()->spreadsheets->batchUpdate($spreadsheet_id, $requestBody);
 
 		clearstatcache();
 
@@ -275,9 +375,6 @@ return;
 			if( $key == 'col_define' ){ continue; }
 			array_push( $config, urlencode($key).'='.urlencode($val) );
 		}
-
-		// sitemapGsのバージョン情報を記載
-		array_push( $config, 'version='.urlencode( $this->plugin->get_version() ) );
 
 		$rtn = implode('&', $config);
 		return $rtn;
@@ -306,7 +403,7 @@ return;
 	/**
 	 * サイトマップをスキャンして、xlsxのデータ部分を作成する
 	 */
-	private function mk_xlsx_body($objSheet, $page_id = ''){
+	private function mk_gsheet_body($objSheet, $page_id = ''){
 		if(!is_string($page_id)){return false;}
 		$sitemap_definition = $this->get_sitemap_definition();
 		$table_definition = $this->get_table_definition();
@@ -430,10 +527,10 @@ return;
 				$this->px->error('ページIDがセットされていません。');
 				continue;
 			}
-			$this->mk_xlsx_body($objSheet, $page_info['id']);
+			$this->mk_gsheet_body($objSheet, $page_info['id']);
 		}
 		return true;
-	}// mk_xlsx_body()
+	}// mk_gsheet_body()
 
 	/**
 	 * 加工されたパスを戻す

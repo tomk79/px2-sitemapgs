@@ -161,7 +161,7 @@ class main{
 						$this->realpath_sitemap_dir.$extensions['csv']
 					);
 					$this->locker->unlock();
-					$this->msg('DONE.');
+					$this->msg('"'.$extless_basename.'" -> DONE.');
 				}
 
 			}elseif(
@@ -180,9 +180,10 @@ class main{
 						$this->realpath_sitemap_dir.$extensions['gsheet']
 					);
 					$this->locker->unlock();
-					$this->msg('DONE.');
+					$this->msg('"'.$extless_basename.'" -> DONE.');
 				}
 			}
+			$this->msg('');
 
 		}
 		return;
